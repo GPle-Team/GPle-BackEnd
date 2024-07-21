@@ -14,13 +14,9 @@ import lib.quick.authservice.global.exception.HttpException;
 import lib.quick.authservice.global.security.dto.TokenType;
 import lib.quick.authservice.global.security.jwt.JwtProvider;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
-import org.springframework.web.client.RestTemplate;
-import org.springframework.web.util.UriComponentsBuilder;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
@@ -32,48 +28,49 @@ public class AuthService {
     private final MemberRepository memberRepository;
     private final JwtProvider jwtProvider;
 
-    @Value("${spring.google.client-id}")
-    private String clientId;
+//    @Value("${spring.google.client-id}")
+//    private String clientId;
 
-    @Value("${spring.google.client-secret}")
-    private String clientSecret;
+//    @Value("${spring.google.client-secret}")
+//    private String clientSecret;
 
-    @Value("${spring.google.redirect-uri}")
-    private String redirectUri;
+//    @Value("${spring.google.redirect-uri}")
+//    private String redirectUri;
 
-    public String getGoogleLoginUrl(){
-        String scope = "email profile";
+//    public String getGoogleLoginUrl(){
+//        String scope = "email profile";
+//
+//        String url = UriComponentsBuilder.fromHttpUrl("https://accounts.google.com/o/oauth2/v2/auth")
+//            .queryParam("client_id", clientId)
+//            .queryParam("redirect_uri", redirectUri)
+//            .queryParam("response_type", "code")
+//            .queryParam("scope", scope)
+//            .toUriString();
+//
+//        return url;
+//    }
 
-        String url = UriComponentsBuilder.fromHttpUrl("https://accounts.google.com/o/oauth2/v2/auth")
-            .queryParam("client_id", clientId)
-            .queryParam("redirect_uri", redirectUri)
-            .queryParam("response_type", "code")
-            .queryParam("scope", scope)
-            .toUriString();
+//    public String getTestAccess(String code){
+//        RestTemplate restTemplate = new RestTemplate();
+//        String tokenUrl = "https://oauth2.googleapis.com/token";
+//
+//        MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+//        params.add("code", code);
+//        params.add("client_id", clientId);
+//        params.add("client_secret", clientSecret);
+//        params.add("redirect_uri", redirectUri);
+//        params.add("grant_type", "authorization_code");
+//
+//        HttpHeaders headers = new HttpHeaders();
+//        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+//
+//        HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(params, headers);
+//
+//        ResponseEntity<String> response = restTemplate.postForEntity(tokenUrl, request, String.class);
+//        return response.toString();
+//    }
 
-        return url;
-    }
-
-    public String getTestAccess(String code){
-        RestTemplate restTemplate = new RestTemplate();
-        String tokenUrl = "https://oauth2.googleapis.com/token";
-
-        MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
-        params.add("code", code);
-        params.add("client_id", clientId);
-        params.add("client_secret", clientSecret);
-        params.add("redirect_uri", redirectUri);
-        params.add("grant_type", "authorization_code");
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-
-        HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(params, headers);
-
-        ResponseEntity<String> response = restTemplate.postForEntity(tokenUrl, request, String.class);
-        return response.toString();
-    }
-
+    @Transactional
     public String getAccessToken(String idToken) throws GeneralSecurityException, IOException {
         HttpTransport transport = new NetHttpTransport();
         JsonFactory factory = GsonFactory.getDefaultInstance();
