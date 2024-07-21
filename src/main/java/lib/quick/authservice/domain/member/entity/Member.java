@@ -1,14 +1,8 @@
 package lib.quick.authservice.domain.member.entity;
 
 import jakarta.persistence.*;
-import lib.quick.authservice.global.util.StringListConverter;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import org.hibernate.annotations.GenericGenerator;
+import lombok.*;
 
-import java.util.List;
 import java.util.UUID;
 
 @Builder
@@ -23,8 +17,10 @@ public class Member {
 
     private String email;
 
-    private String password;
+    private String username;
 
-    @Convert(converter = StringListConverter.class)
-    private List<Role> roles;
+    @Setter
+    private String name;
+
+    private Role role;
 }

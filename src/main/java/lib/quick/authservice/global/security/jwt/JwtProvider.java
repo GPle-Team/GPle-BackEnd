@@ -7,6 +7,8 @@ import lib.quick.authservice.domain.auth.controller.dto.response.UserLoginRespon
 import lib.quick.authservice.global.exception.HttpException;
 import lib.quick.authservice.global.security.dto.TokenType;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -18,6 +20,7 @@ import java.util.Base64;
 import java.util.Date;
 import java.util.UUID;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class JwtProvider {
@@ -35,14 +38,7 @@ public class JwtProvider {
     @Value("${spring.jwt.refresh-expired}")
     public Long refreshExp;
 
-    public UserLoginResponse generateTokenSet(UUID id){
-        return new UserLoginResponse(
-            generateToken(id, TokenType.ACCESS_TOKEN),
-            generateToken(id, TokenType.REFRESH_TOKEN)
-        );
-    }
-
-    public String generateToken(UUID id, TokenType tokenType) {
+    public String generateToken(String id, TokenType tokenType) {
         Long expired = tokenType == TokenType.ACCESS_TOKEN ? accessExp : refreshExp;
 
         byte[] keyBytes = Base64.getEncoder().encode(accessKey.getBytes());
@@ -50,7 +46,7 @@ public class JwtProvider {
 
         return Jwts.builder()
             .signWith(signingKey)
-            .subject(String.valueOf(id))
+            .subject(id)
             .issuedAt(new Date())
             .expiration(new Date(System.currentTimeMillis() + expired))
             .compact();
@@ -62,10 +58,14 @@ public class JwtProvider {
     }
 
     private String getTokenSubject(String subject) {
-        return getClaims(subject).getSubject();
+        return getPayload(subject).getSubject();
     }
 
-    public Claims getClaims(String token) {
+    public Claims getPayload(String token) {
+        return getClaims(token).getPayload();
+    }
+
+    public Jws<Claims> getClaims(String token) {
         byte[] keyBytes = Base64.getEncoder().encode(accessKey.getBytes());
         SecretKey signingKey = Keys.hmacShaKeyFor(keyBytes);
 
@@ -73,8 +73,7 @@ public class JwtProvider {
             return Jwts.parser()
                 .verifyWith(signingKey)
                 .build()
-                .parseSignedClaims(token)
-                .getPayload();
+                .parseSignedClaims(token);
         } catch (ExpiredJwtException e) {
             throw new HttpException(HttpStatus.UNAUTHORIZED, "만료된 토큰입니다.");
         } catch (UnsupportedJwtException e) {
@@ -87,6 +86,7 @@ public class JwtProvider {
             throw new HttpException(HttpStatus.FORBIDDEN, "알 수 없는 토큰입니다.");
         }
     }
+
 
     public Boolean validateToken(String token){
         byte[] keyBytes = Base64.getEncoder().encode(accessKey.getBytes());

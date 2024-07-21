@@ -16,7 +16,7 @@ public class MemberUtil {
     private final MemberRepository memberRepository;
 
     public Member getCurrentMember(){
-        return memberRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName())
+        return memberRepository.findByUsername(SecurityContextHolder.getContext().getAuthentication().getName())
             .orElseThrow(() -> new HttpException(HttpStatus.NOT_FOUND, "해당 유저를 찾을 수 없습니다."));
     }
 }
