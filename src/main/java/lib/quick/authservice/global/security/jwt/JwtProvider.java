@@ -3,7 +3,6 @@ package lib.quick.authservice.global.security.jwt;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.security.SignatureException;
-import lib.quick.authservice.domain.auth.controller.dto.response.UserLoginResponse;
 import lib.quick.authservice.global.exception.HttpException;
 import lib.quick.authservice.global.security.dto.TokenType;
 import lombok.RequiredArgsConstructor;
