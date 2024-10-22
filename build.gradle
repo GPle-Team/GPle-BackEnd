@@ -4,7 +4,7 @@ plugins {
     id 'io.spring.dependency-management' version '1.1.5'
 }
 
-group = 'lib.quick'
+group = 'com.gple'
 version = '0.0.1-SNAPSHOT'
 
 java {
@@ -43,6 +43,13 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-security'
     testImplementation 'org.springframework.security:spring-security-test'
     implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
+
+    // Google OAuth2
+    compileOnly 'com.google.api-client:google-api-client:1.32.1'
+
+    // Redis
+    implementation 'org.springframework.data:spring-data-redis'
+    implementation 'io.lettuce:lettuce-core:6.3.2.RELEASE'
 
     // JWT
     compileOnly 'io.jsonwebtoken:jjwt-api:0.12.6'
