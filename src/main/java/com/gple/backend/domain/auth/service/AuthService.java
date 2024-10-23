@@ -1,24 +1,24 @@
 package com.gple.backend.domain.auth.service;
 
 import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeTokenRequest;
-import com.gple.backend.domain.auth.controller.dto.response.TokenSet;
+import com.gple.backend.domain.auth.controller.dto.common.response.TokenSet;
 import com.google.api.client.googleapis.auth.oauth2.GoogleTokenResponse;
 import com.google.api.client.http.HttpTransport;
 import com.google.api.client.json.JsonFactory;
-import com.gple.backend.domain.auth.controller.dto.response.GoogleOAuthToken;
-import com.gple.backend.domain.auth.controller.dto.response.GoogleUserInfo;
-import com.gple.backend.domain.auth.controller.dto.response.TokenResponse;
+import com.gple.backend.domain.auth.controller.dto.common.response.GoogleOAuthToken;
+import com.gple.backend.domain.auth.controller.dto.common.response.GoogleUserInfo;
+import com.gple.backend.domain.auth.controller.dto.common.response.TokenResponse;
 import com.gple.backend.domain.auth.controller.dto.web.response.RefreshTokenResponse;
 import com.gple.backend.domain.auth.controller.dto.web.response.WebTokenResponse;
 import com.gple.backend.domain.auth.entity.RefreshToken;
 import com.gple.backend.domain.auth.repository.RefreshTokenRepository;
-import com.gple.backend.domain.member.entity.Member;
-import com.gple.backend.domain.member.entity.Role;
-import com.gple.backend.domain.member.repository.MemberRepository;
+import com.gple.backend.domain.user.entity.User;
+import com.gple.backend.domain.user.entity.Role;
+import com.gple.backend.domain.user.repository.UserRepository;
 import com.gple.backend.global.exception.HttpException;
 import com.gple.backend.global.security.dto.TokenType;
 import com.gple.backend.global.security.jwt.JwtProvider;
-import com.gple.backend.global.util.MemberUtil;
+import com.gple.backend.global.util.UserUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -30,17 +30,18 @@ import org.springframework.web.reactive.function.client.WebClient;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.UUID;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class AuthService {
-    private final MemberRepository memberRepository;
+    private final UserRepository userRepository;
     private final RefreshTokenRepository refreshTokenRepository;
     private final JsonFactory jsonFactory;
     private final HttpTransport httpTransport;
-    private final MemberUtil memberUtil;
+    private final UserUtil userUtil;
     private final JwtProvider jwtProvider;
 
     @Value("${spring.security.oauth2.client.registration.google.client-id}")
@@ -61,7 +62,7 @@ public class AuthService {
             throw new HttpException(HttpStatus.UNAUTHORIZED, "리프레시 토큰이 유효하지 않습니다.");
         }
 
-        TokenResponse generatedToken = jwtProvider.generateToken(UUID.fromString(id), TokenType.ACCESS_TOKEN);
+        TokenResponse generatedToken = jwtProvider.generateToken(id, TokenType.ACCESS_TOKEN);
         return new RefreshTokenResponse(generatedToken.getToken(), generatedToken.getExpires());
     }
 
@@ -71,15 +72,17 @@ public class AuthService {
         GoogleUserInfo userInfo = getGoogleUserInfo(googleOAuthToken.getAccess_token());
         String email = userInfo.getEmail();
 
+        validEmail(email);
         existOrSaveUser(email);
-        Member member = memberRepository.findByEmail(email).orElseThrow(() ->
+
+        User user = userRepository.findByEmail(email).orElseThrow(() ->
             new HttpException(HttpStatus.BAD_REQUEST, "예기치 않은 오류로 유저를 찾을 수 없습니다.")
         );
 
-        TokenSet tokenSet = jwtProvider.generateTokenSet(member.getId());
+        TokenSet tokenSet = jwtProvider.generateTokenSet(user.getId().toString());
         TokenResponse refreshToken = tokenSet.getRefreshToken();
 
-        saveRefreshToken(member.getId(), refreshToken.getToken());
+        saveRefreshToken(user.getId(), refreshToken.getToken());
 
         return tokenSet.toWebTokenResponse();
     }
@@ -90,26 +93,35 @@ public class AuthService {
             String slicedToken = refreshToken.substring(7);
 
             String tokenId = jwtProvider.getClaims(slicedToken, TokenType.REFRESH_TOKEN).getSubject();
-            Member member = memberUtil.getCurrentMember();
-            String id = member.getId().toString();
+            User user = userUtil.getCurrentUser();
+            String id = user.getId().toString();
 
             if(tokenId.equals(id)) refreshTokenRepository.deleteById(id);
             else throw new HttpException(HttpStatus.NOT_FOUND, "토큰과 일치하는 유저를 찾을 수 없습니다.");
         }
     }
 
-    // 해당 이메일의 유저가 존재하지 않으면 유저 생성
-    public void existOrSaveUser(String email){
-        if(!memberRepository.existsByEmail(email)){
-            Member joinMember = Member.builder()
-                .email(email)
-                .roles(List.of(Role.ROLE_MEMBER))
-                .build();
-            memberRepository.save(joinMember);
+    private void validEmail(String email){
+        Pattern pattern = Pattern.compile("^[a-zA-Z0-9._%+-]+@gsm\\.hs\\.kr$");
+        Matcher matcher = pattern.matcher(email);
+
+        if(!matcher.matches()){
+            throw new HttpException(HttpStatus.BAD_REQUEST, "gsm.hs.kr 도메인만 사용할 수 있습니다.");
         }
     }
 
-    public GoogleOAuthToken getGoogleTokens(String code) {
+    // 해당 이메일의 유저가 존재하지 않으면 유저 생성
+    private void existOrSaveUser(String email){
+        if(!userRepository.existsByEmail(email)){
+            User joinUser = User.builder()
+                .email(email)
+                .roles(List.of(Role.ROLE_USER))
+                .build();
+            userRepository.save(joinUser);
+        }
+    }
+
+    private GoogleOAuthToken getGoogleTokens(String code) {
         GoogleTokenResponse googleTokenResponse = getGoogleTokenResponse(code);
 
         return GoogleOAuthToken.builder()
@@ -120,7 +132,7 @@ public class AuthService {
             .build();
     }
 
-    public GoogleUserInfo getGoogleUserInfo(String accessToken){
+    private GoogleUserInfo getGoogleUserInfo(String accessToken){
         WebClient client = WebClient.create("https://www.googleapis.com");
         ResponseEntity<GoogleUserInfo> response = client.get()
             .uri("/oauth2/v2/userinfo")
@@ -136,7 +148,7 @@ public class AuthService {
         return response.getBody();
     }
 
-    private void saveRefreshToken(UUID id, String token){
+    private void saveRefreshToken(Long id, String token){
         RefreshToken refreshToken = RefreshToken.builder()
             .id(id.toString())
             .token(token)

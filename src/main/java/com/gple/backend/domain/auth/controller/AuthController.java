@@ -14,7 +14,7 @@ public class AuthController {
     private final AuthService authService;
 
     @PostMapping("/google/login")
-    public ResponseEntity<WebTokenResponse> joinMember(@RequestParam(name = "code") String code){
+    public ResponseEntity<WebTokenResponse> joinUser(@RequestParam(name = "code") String code){
         return ResponseEntity.ok(authService.googleLogin(code));
     }
 

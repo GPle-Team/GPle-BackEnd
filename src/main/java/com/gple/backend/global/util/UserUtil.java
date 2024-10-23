@@ -1,7 +1,7 @@
 package com.gple.backend.global.util;
 
-import com.gple.backend.domain.member.entity.Member;
-import com.gple.backend.domain.member.repository.MemberRepository;
+import com.gple.backend.domain.user.entity.User;
+import com.gple.backend.domain.user.repository.UserRepository;
 import com.gple.backend.global.exception.HttpException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -12,11 +12,11 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class MemberUtil {
-    private final MemberRepository memberRepository;
+public class UserUtil {
+    private final UserRepository userRepository;
 
-    public Member getCurrentMember(){
-        return memberRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName())
+    public User getCurrentUser(){
+        return userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName())
             .orElseThrow(() -> new HttpException(HttpStatus.NOT_FOUND, "해당 유저를 찾을 수 없습니다."));
     }
 }

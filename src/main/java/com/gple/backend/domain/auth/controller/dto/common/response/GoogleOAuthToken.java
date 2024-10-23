@@ -1,4 +1,4 @@
-package com.gple.backend.domain.auth.controller.dto.response;
+package com.gple.backend.domain.auth.controller.dto.common.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

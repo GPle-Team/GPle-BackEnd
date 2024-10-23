@@ -3,8 +3,8 @@ package com.gple.backend.global.security.jwt;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.security.SignatureException;
-import com.gple.backend.domain.auth.controller.dto.response.TokenResponse;
-import com.gple.backend.domain.auth.controller.dto.response.TokenSet;
+import com.gple.backend.domain.auth.controller.dto.common.response.TokenResponse;
+import com.gple.backend.domain.auth.controller.dto.common.response.TokenSet;
 import com.gple.backend.global.exception.HttpException;
 import com.gple.backend.global.security.dto.TokenType;
 import lombok.RequiredArgsConstructor;
@@ -18,7 +18,6 @@ import javax.crypto.SecretKey;
 import java.text.SimpleDateFormat;
 import java.util.Base64;
 import java.util.Date;
-import java.util.UUID;
 
 @Component
 @RequiredArgsConstructor
@@ -37,14 +36,14 @@ public class JwtProvider {
     @Value("${spring.jwt.refresh-expired}")
     public Long refreshExp;
 
-    public TokenSet generateTokenSet(UUID id){
+    public TokenSet generateTokenSet(String id){
         return new TokenSet(
             generateToken(id, TokenType.ACCESS_TOKEN),
             generateToken(id, TokenType.REFRESH_TOKEN)
         );
     }
 
-    public TokenResponse generateToken(UUID id, TokenType tokenType) {
+    public TokenResponse generateToken(String id, TokenType tokenType) {
         Long expired = tokenType == TokenType.ACCESS_TOKEN ? accessExp : refreshExp;
 
         byte[] keyBytes = Base64.getEncoder().encode(tokenType == TokenType.ACCESS_TOKEN
