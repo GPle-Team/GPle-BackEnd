@@ -1,6 +1,6 @@
 package com.gple.backend.global.security.details;
 
-import com.gple.backend.domain.member.entity.Member;
+import com.gple.backend.domain.user.entity.User;
 import lombok.AllArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -8,12 +8,12 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.util.Collection;
 
 @AllArgsConstructor
-public class MemberDetails implements UserDetails {
-    private Member member;
+public class AuthDetails implements UserDetails {
+    private User user;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return member.getRoles().stream().map(role ->
+        return user.getRoles().stream().map(role ->
             new SimpleGrantedAuthority(role.getPermission())
         ).toList();
     }
@@ -26,6 +26,6 @@ public class MemberDetails implements UserDetails {
 
     @Override
     public String getUsername() {
-        return member.getEmail();
+        return user.getEmail();
     }
 }

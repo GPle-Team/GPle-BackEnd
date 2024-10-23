@@ -37,14 +37,14 @@ public class JwtProvider {
     @Value("${spring.jwt.refresh-expired}")
     public Long refreshExp;
 
-    public TokenSet generateTokenSet(UUID id){
+    public TokenSet generateTokenSet(String id){
         return new TokenSet(
             generateToken(id, TokenType.ACCESS_TOKEN),
             generateToken(id, TokenType.REFRESH_TOKEN)
         );
     }
 
-    public TokenResponse generateToken(UUID id, TokenType tokenType) {
+    public TokenResponse generateToken(String id, TokenType tokenType) {
         Long expired = tokenType == TokenType.ACCESS_TOKEN ? accessExp : refreshExp;
 
         byte[] keyBytes = Base64.getEncoder().encode(tokenType == TokenType.ACCESS_TOKEN

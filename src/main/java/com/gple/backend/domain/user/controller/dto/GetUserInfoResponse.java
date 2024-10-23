@@ -1,4 +1,4 @@
-package com.gple.backend.domain.member.controller.dto;
+package com.gple.backend.domain.user.controller.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

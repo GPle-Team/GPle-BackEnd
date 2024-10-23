@@ -1,4 +1,4 @@
-package com.gple.backend.domain.member.entity;
+package com.gple.backend.domain.user.entity;
 
 import jakarta.persistence.*;
 import com.gple.backend.global.util.StringListConverter;
@@ -8,17 +8,16 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.util.List;
-import java.util.UUID;
 
-@Entity
 @Getter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Member {
+@Entity(name = "users")
+public class User {
     @Id
-    @GeneratedValue(generator = "uuid2")
-    private UUID id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
     private String email;
 

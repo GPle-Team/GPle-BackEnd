@@ -1,4 +1,4 @@
-package com.gple.backend.domain.member.entity;
+package com.gple.backend.domain.user.entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -6,7 +6,8 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public enum Role {
-    ROLE_MEMBER("ROLE_MEMBER");
+    ROLE_USER("ROLE_USER"),
+    ROLE_ADMIN("ROLE_ADMIN");
 
     private final String permission;
 }

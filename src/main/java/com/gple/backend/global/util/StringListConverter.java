@@ -2,7 +2,7 @@ package com.gple.backend.global.util;
 
 import jakarta.persistence.AttributeConverter;
 import jakarta.persistence.Converter;
-import com.gple.backend.domain.member.entity.Role;
+import com.gple.backend.domain.user.entity.Role;
 
 import java.util.Arrays;
 import java.util.List;

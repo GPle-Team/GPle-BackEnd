@@ -1,6 +1,6 @@
 package com.gple.backend.global.security.details;
 
-import com.gple.backend.domain.member.repository.MemberRepository;
+import com.gple.backend.domain.user.repository.UserRepository;
 import com.gple.backend.global.exception.HttpException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -9,17 +9,15 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 
-import java.util.UUID;
-
 @Component
 @RequiredArgsConstructor
-public class MemberDetailsService implements UserDetailsService {
-    private final MemberRepository memberRepository;
+public class AuthDetailsService implements UserDetailsService {
+    private final UserRepository userRepository;
 
     @Override
     public UserDetails loadUserByUsername(String id) throws UsernameNotFoundException {
-        return new MemberDetails(
-            memberRepository.findById(UUID.fromString(id)).orElseThrow(() ->
+        return new AuthDetails(
+            userRepository.findById(Long.valueOf(id)).orElseThrow(() ->
                 new HttpException(HttpStatus.NOT_FOUND, "해당 유저를 찾을 수 없습니다.")
             )
         );
