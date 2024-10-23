@@ -1,5 +1,6 @@
 package com.gple.backend.domain.user.entity;
 
+import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 import com.gple.backend.global.util.StringListConverter;
 import lombok.AllArgsConstructor;
@@ -19,10 +20,20 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false)
     private String email;
+
+    private String username;
+
+    private String studentNumber;
 
     private String password;
 
     @Convert(converter = StringListConverter.class)
     private List<Role> roles;
+
+    public void setStudentProfile(String username, String studentNumber){
+        this.username = username;
+        this.studentNumber = studentNumber;
+    }
 }
