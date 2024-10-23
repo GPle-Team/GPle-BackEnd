@@ -1,13 +1,13 @@
 package com.gple.backend.domain.auth.service;
 
 import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeTokenRequest;
-import com.gple.backend.domain.auth.controller.dto.response.TokenSet;
+import com.gple.backend.domain.auth.controller.dto.common.response.TokenSet;
 import com.google.api.client.googleapis.auth.oauth2.GoogleTokenResponse;
 import com.google.api.client.http.HttpTransport;
 import com.google.api.client.json.JsonFactory;
-import com.gple.backend.domain.auth.controller.dto.response.GoogleOAuthToken;
-import com.gple.backend.domain.auth.controller.dto.response.GoogleUserInfo;
-import com.gple.backend.domain.auth.controller.dto.response.TokenResponse;
+import com.gple.backend.domain.auth.controller.dto.common.response.GoogleOAuthToken;
+import com.gple.backend.domain.auth.controller.dto.common.response.GoogleUserInfo;
+import com.gple.backend.domain.auth.controller.dto.common.response.TokenResponse;
 import com.gple.backend.domain.auth.controller.dto.web.response.RefreshTokenResponse;
 import com.gple.backend.domain.auth.controller.dto.web.response.WebTokenResponse;
 import com.gple.backend.domain.auth.entity.RefreshToken;
@@ -30,6 +30,8 @@ import org.springframework.web.reactive.function.client.WebClient;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Slf4j
 @Service
@@ -70,7 +72,9 @@ public class AuthService {
         GoogleUserInfo userInfo = getGoogleUserInfo(googleOAuthToken.getAccess_token());
         String email = userInfo.getEmail();
 
+        validEmail(email);
         existOrSaveUser(email);
+
         User user = userRepository.findByEmail(email).orElseThrow(() ->
             new HttpException(HttpStatus.BAD_REQUEST, "예기치 않은 오류로 유저를 찾을 수 없습니다.")
         );
@@ -97,8 +101,17 @@ public class AuthService {
         }
     }
 
+    private void validEmail(String email){
+        Pattern pattern = Pattern.compile("^[a-zA-Z0-9._%+-]+@gsm\\.hs\\.kr$");
+        Matcher matcher = pattern.matcher(email);
+
+        if(!matcher.matches()){
+            throw new HttpException(HttpStatus.BAD_REQUEST, "gsm.hs.kr 도메인만 사용할 수 있습니다.");
+        }
+    }
+
     // 해당 이메일의 유저가 존재하지 않으면 유저 생성
-    public void existOrSaveUser(String email){
+    private void existOrSaveUser(String email){
         if(!userRepository.existsByEmail(email)){
             User joinUser = User.builder()
                 .email(email)
@@ -108,7 +121,7 @@ public class AuthService {
         }
     }
 
-    public GoogleOAuthToken getGoogleTokens(String code) {
+    private GoogleOAuthToken getGoogleTokens(String code) {
         GoogleTokenResponse googleTokenResponse = getGoogleTokenResponse(code);
 
         return GoogleOAuthToken.builder()
@@ -119,7 +132,7 @@ public class AuthService {
             .build();
     }
 
-    public GoogleUserInfo getGoogleUserInfo(String accessToken){
+    private GoogleUserInfo getGoogleUserInfo(String accessToken){
         WebClient client = WebClient.create("https://www.googleapis.com");
         ResponseEntity<GoogleUserInfo> response = client.get()
             .uri("/oauth2/v2/userinfo")
