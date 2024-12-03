@@ -37,3 +37,20 @@ spring:
     refresh-key: ${REFRESH_KEY}
     access-expired: 3600000
     refresh-expired: 172800000
+
+  cloud:
+    aws:
+      credentials:
+        access-key: ${AWS_ACCESS_KEY}
+        secret-key: ${AWS_SECRET_KEY}
+      s3:
+        bucket-name: ${AWS_BUCKET_NAME}
+      region:
+        static: ${AWS_REGION}
+      stack:
+        auto: false
+
+  servlet:
+    multipart:
+      max-file-size: 3MB
+      max-request-size: 3MB
