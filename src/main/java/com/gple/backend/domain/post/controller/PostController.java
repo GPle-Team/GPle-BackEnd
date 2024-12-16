@@ -25,7 +25,7 @@ public class PostController {
     private final QueryAllPostService queryAllPostService;
 
     @PostMapping("/")
-    public ResponseEntity<Void> post(@RequestBody CreatePostReqDto reqDto) {
+    public ResponseEntity<Void> post(@RequestBody @Valid CreatePostReqDto reqDto) {
         createPostService.execute(reqDto);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
