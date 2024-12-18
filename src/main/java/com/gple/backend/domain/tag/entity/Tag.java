@@ -1,5 +1,6 @@
-package com.gple.backend.domain.post.entity;
+package com.gple.backend.domain.tag.entity;
 
+import com.gple.backend.domain.post.entity.Post;
 import com.gple.backend.domain.user.entity.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;

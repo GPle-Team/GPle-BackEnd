@@ -1,6 +1,5 @@
 package com.gple.backend.domain.user.entity;
 
-import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 import com.gple.backend.global.util.StringListConverter;
 import lombok.AllArgsConstructor;
