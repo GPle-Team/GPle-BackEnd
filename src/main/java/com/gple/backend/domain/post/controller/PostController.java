@@ -24,19 +24,19 @@ public class PostController {
     private final QueryPostService queryPostService;
     private final QueryAllPostService queryAllPostService;
 
-    @PostMapping("/")
-    public ResponseEntity<Void> post(@RequestBody CreatePostReqDto reqDto) {
+    @PostMapping
+    public ResponseEntity<Void> post(@RequestBody @Valid CreatePostReqDto reqDto) {
         createPostService.execute(reqDto);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @GetMapping("/{postId}")
     public ResponseEntity<QueryPostResDto> queryPost(@Valid @PathVariable Long postId) {
-        queryPostService.execute(postId);
-        return ResponseEntity.ok().build();
+        QueryPostResDto post = queryPostService.execute(postId);
+        return ResponseEntity.ok(post);
     }
 
-    @GetMapping("/")
+    @GetMapping
     public ResponseEntity<List<QueryPostResDto>> queryAllPost() {
         List<QueryPostResDto> postLists = queryAllPostService.execute();
         return ResponseEntity.ok(postLists);

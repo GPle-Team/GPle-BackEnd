@@ -1,5 +1,7 @@
 package com.gple.backend.domain.post.controller.dto.response;
 
+import com.gple.backend.domain.emoji.controller.dto.response.EmojiResDto;
+import com.gple.backend.domain.tag.dto.response.TagResDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -17,9 +19,13 @@ public class QueryPostResDto {
 
     private String title;
 
-    private String imageUrl;
+    private List<String> imageUrl;
 
     private String location;
+
+    private List<TagResDto> tagList;
+
+    private EmojiResDto emojiList;
 
     private LocalDateTime createdTime;
 }
