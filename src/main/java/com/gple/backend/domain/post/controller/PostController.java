@@ -32,8 +32,8 @@ public class PostController {
 
     @GetMapping("/{postId}")
     public ResponseEntity<QueryPostResDto> queryPost(@Valid @PathVariable Long postId) {
-        queryPostService.execute(postId);
-        return ResponseEntity.ok().build();
+        QueryPostResDto post = queryPostService.execute(postId);
+        return ResponseEntity.ok(post);
     }
 
     @GetMapping("/")
