@@ -1,4 +1,4 @@
-package com.gple.backend.domain.emoji.controller.dto;
+package com.gple.backend.domain.emoji.controller.dto.request;
 
 import com.gple.backend.domain.emoji.entity.EmojiType;
 import jakarta.validation.constraints.NotNull;

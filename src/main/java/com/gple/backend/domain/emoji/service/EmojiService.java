@@ -1,8 +1,7 @@
 package com.gple.backend.domain.emoji.service;
 
-import com.gple.backend.domain.emoji.controller.dto.EmojiReqDto;
+import com.gple.backend.domain.emoji.controller.dto.request.EmojiReqDto;
 import com.gple.backend.domain.emoji.entity.Emoji;
-import com.gple.backend.domain.emoji.entity.EmojiType;
 import com.gple.backend.domain.emoji.repository.EmojiRepository;
 import com.gple.backend.domain.post.entity.Post;
 import com.gple.backend.domain.post.repository.PostRepository;
@@ -11,8 +10,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
