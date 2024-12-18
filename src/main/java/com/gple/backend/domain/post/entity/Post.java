@@ -3,6 +3,8 @@ package com.gple.backend.domain.post.entity;
 import com.gple.backend.domain.emoji.entity.Emoji;
 import com.gple.backend.domain.tag.entity.Tag;
 import com.gple.backend.domain.user.entity.User;
+import com.gple.backend.global.util.RoleListConverter;
+import com.gple.backend.global.util.StringListConverter;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -35,8 +37,9 @@ public class Post {
     @OneToMany(mappedBy = "post")
     private List<Emoji> emoji;
 
-    @Column(name = "image_url", nullable = false)
-    private String imageUrl;
+    @Convert(converter = StringListConverter.class)
+    @Column(name = "image_url", nullable = false, columnDefinition = "VARCHAR(256)")
+    private List<String> imageUrl;
 
     @Column(name = "location", nullable = false)
     private String location;

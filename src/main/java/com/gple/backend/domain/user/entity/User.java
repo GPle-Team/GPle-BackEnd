@@ -1,7 +1,7 @@
 package com.gple.backend.domain.user.entity;
 
 import jakarta.persistence.*;
-import com.gple.backend.global.util.StringListConverter;
+import com.gple.backend.global.util.RoleListConverter;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -28,7 +28,7 @@ public class User {
 
     private String password;
 
-    @Convert(converter = StringListConverter.class)
+    @Convert(converter = RoleListConverter.class)
     private List<Role> roles;
 
     public void setStudentProfile(String username, String studentNumber){
