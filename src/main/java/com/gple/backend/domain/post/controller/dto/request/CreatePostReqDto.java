@@ -1,10 +1,12 @@
 package com.gple.backend.domain.post.controller.dto.request;
 
-import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.util.List;
 
 
 @Getter
@@ -12,12 +14,15 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CreatePostReqDto {
-    @NotBlank
+    @NotNull
     private String title;
 
-    @NotBlank
+    @NotNull
     private String location;
 
-    @NotBlank
+    @NotNull
+    private List<Long> userList;
+
+    @NotNull
     private String imageUrl;
 }
