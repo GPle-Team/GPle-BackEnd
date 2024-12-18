@@ -33,9 +33,12 @@ public class SecurityConfig {
             .formLogin(AbstractHttpConfigurer::disable)
             .authorizeHttpRequests((authorizeHttpRequests) ->
                 authorizeHttpRequests
-                    .requestMatchers("/auth/**").permitAll()
-                    .requestMatchers("/user/**").hasRole("USER")
-                    .anyRequest().permitAll()
+                        .requestMatchers("/auth/**").permitAll()
+                        .requestMatchers("/user/**").hasRole("USER")
+                        .requestMatchers("/post/**").hasRole("USER")
+                        .requestMatchers("/image/**").hasRole("USER")
+                        .requestMatchers("/emoji/**").hasRole("USER")
+                        .anyRequest().authenticated()
             )
             .sessionManagement((sessionManagement) ->
                 sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
