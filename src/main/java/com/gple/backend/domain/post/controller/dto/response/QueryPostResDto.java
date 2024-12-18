@@ -19,7 +19,7 @@ public class QueryPostResDto {
 
     private String title;
 
-    private String imageUrl;
+    private List<String> imageUrl;
 
     private String location;
 

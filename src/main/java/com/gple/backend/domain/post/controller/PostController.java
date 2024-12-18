@@ -24,7 +24,7 @@ public class PostController {
     private final QueryPostService queryPostService;
     private final QueryAllPostService queryAllPostService;
 
-    @PostMapping("/")
+    @PostMapping
     public ResponseEntity<Void> post(@RequestBody @Valid CreatePostReqDto reqDto) {
         createPostService.execute(reqDto);
         return ResponseEntity.status(HttpStatus.CREATED).build();
@@ -36,7 +36,7 @@ public class PostController {
         return ResponseEntity.ok(post);
     }
 
-    @GetMapping("/")
+    @GetMapping
     public ResponseEntity<List<QueryPostResDto>> queryAllPost() {
         List<QueryPostResDto> postLists = queryAllPostService.execute();
         return ResponseEntity.ok(postLists);

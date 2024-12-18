@@ -1,11 +1,14 @@
 package com.gple.backend.domain.post.controller.dto.request;
 
+import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -20,9 +23,9 @@ public class CreatePostReqDto {
     @NotNull
     private String location;
 
-    @NotNull
     private List<Long> userList;
 
     @NotNull
-    private String imageUrl;
+    @Size(max = 3)
+    private List<String> imageUrl;
 }
