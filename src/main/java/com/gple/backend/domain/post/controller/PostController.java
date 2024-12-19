@@ -1,5 +1,7 @@
 package com.gple.backend.domain.post.controller;
 
+import com.gple.backend.domain.emoji.entity.Emoji;
+import com.gple.backend.domain.emoji.entity.EmojiType;
 import com.gple.backend.domain.post.controller.dto.request.CreatePostRequest;
 import com.gple.backend.domain.post.controller.dto.response.QueryReactedPostListResponse;
 import com.gple.backend.domain.post.controller.dto.response.QueryAllMyPostResponse;
@@ -62,5 +64,3 @@ public class PostController {
         return ResponseEntity.ok(queryAllReactedPostService.execute());
     }
 }
-
-// 내가 올린 게시물과 내가 반응을 누른 게시물

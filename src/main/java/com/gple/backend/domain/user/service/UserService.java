@@ -24,7 +24,6 @@ public class UserService {
     @Transactional
     public void createUserProfile(CreateUserProfileRequest request){
         User user = userUtil.getCurrentUser();
-        String profileImage = s3Adapter.uploadImage(request.getFile());
 
         if(request.getName() != null &&
             !user.getUsername().equals(request.getName())
@@ -39,6 +38,7 @@ public class UserService {
         }
 
         if(!request.getFile().isEmpty()){
+            String profileImage = s3Adapter.uploadImage(request.getFile());
             user.setProfileImage(profileImage);
         }
 

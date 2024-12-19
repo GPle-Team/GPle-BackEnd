@@ -16,6 +16,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+import static com.gple.backend.domain.post.common.PostCommon.getEmojiCount;
+
 @Service
 @RequiredArgsConstructor
 public class QueryAllMyPostService {
@@ -55,9 +57,5 @@ public class QueryAllMyPostService {
                 .imageUrl(post.getImageUrl())
                 .build();
         }).toList();
-    }
-
-    public static Long getEmojiCount(List<Emoji> countEmojis, EmojiType emojiType) {
-        return countEmojis.stream().filter(emoji -> emoji.getEmojiType() == emojiType).count();
     }
 }
