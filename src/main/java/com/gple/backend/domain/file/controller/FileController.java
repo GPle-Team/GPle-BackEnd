@@ -1,8 +1,8 @@
-package com.gple.backend.global.thirdParty.aws.s3.controller;
+package com.gple.backend.domain.file.controller;
 
-import com.gple.backend.global.thirdParty.aws.s3.dto.response.UploadImageResDto;
-import com.gple.backend.global.thirdParty.aws.s3.dto.response.UploadImagesResDto;
-import com.gple.backend.global.thirdParty.aws.s3.service.S3Service;
+import com.gple.backend.domain.file.service.FileService;
+import com.gple.backend.domain.file.dto.response.UploadImageResponse;
+import com.gple.backend.domain.file.dto.response.UploadImagesResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -10,24 +10,24 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 
 @RestController
-@RequestMapping("/image")
+@RequestMapping("/file")
 @RequiredArgsConstructor
-public class S3Controller {
-    private final S3Service s3Service;
+public class FileController {
+    private final FileService fileService;
 
     @PostMapping("/image")
-    public UploadImageResDto uploadImage(
+    public UploadImageResponse uploadImage(
             @RequestParam(value = "file") MultipartFile multipartFile
     ) {
-        String fileUrl = s3Service.uploadImage(multipartFile);
-        return new UploadImageResDto(fileUrl);
+        String fileUrl = fileService.uploadImage(multipartFile);
+        return new UploadImageResponse(fileUrl);
     }
 
     @PostMapping("/images")
-    public UploadImagesResDto uploadImages(
+    public UploadImagesResponse uploadImages(
             @RequestParam(value = "files") List<MultipartFile> multipartFiles
     ) {
-        List<String> fileUrls = s3Service.uploadImages(multipartFiles);
-        return new UploadImagesResDto(fileUrls);
+        List<String> fileUrls = fileService.uploadImages(multipartFiles);
+        return new UploadImagesResponse(fileUrls);
     }
 }
