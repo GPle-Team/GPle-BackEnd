@@ -5,7 +5,7 @@ import lombok.Getter;
 
 @Getter
 @Builder
-public class EmojiResDto {
+public class EmojiResponse {
     private Long heartCount;
 
     private Long congCount;

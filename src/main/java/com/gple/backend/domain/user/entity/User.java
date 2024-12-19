@@ -2,14 +2,12 @@ package com.gple.backend.domain.user.entity;
 
 import jakarta.persistence.*;
 import com.gple.backend.global.util.RoleListConverter;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.List;
 
 @Getter
+@Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -31,8 +29,11 @@ public class User {
     @Convert(converter = RoleListConverter.class)
     private List<Role> roles;
 
-    public void setStudentProfile(String username, String studentNumber){
+    private String profileImage;
+
+    public void setStudentProfile(String username, String studentNumber, String profileImage){
         this.username = username;
         this.studentNumber = studentNumber;
+        this.profileImage = profileImage;
     }
 }

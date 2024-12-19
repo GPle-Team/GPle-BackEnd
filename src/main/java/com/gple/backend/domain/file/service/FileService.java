@@ -1,7 +1,7 @@
-package com.gple.backend.global.thirdParty.aws.s3.service;
+package com.gple.backend.domain.file.service;
 
 import com.gple.backend.global.exception.ExpectedException;
-import com.gple.backend.global.thirdParty.aws.s3.properties.S3Properties;
+import com.gple.backend.global.thirdParty.aws.properties.S3Properties;
 import io.awspring.cloud.s3.ObjectMetadata;
 import io.awspring.cloud.s3.S3Exception;
 import io.awspring.cloud.s3.S3Resource;
@@ -24,7 +24,7 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
-public class S3Service {
+public class FileService {
     private final S3Template s3Template;
     private final S3Properties properties;
 
