@@ -1,11 +1,7 @@
 package com.gple.backend.domain.post.controller;
 
-import com.gple.backend.domain.emoji.entity.Emoji;
-import com.gple.backend.domain.emoji.entity.EmojiType;
-import com.gple.backend.domain.post.controller.dto.request.CreatePostRequest;
-import com.gple.backend.domain.post.controller.dto.response.QueryReactedPostListResponse;
-import com.gple.backend.domain.post.controller.dto.response.QueryAllMyPostResponse;
-import com.gple.backend.domain.post.controller.dto.response.QueryPostResponse;
+import com.gple.backend.domain.post.controller.dto.presentation.request.CreatePostRequest;
+import com.gple.backend.domain.post.controller.dto.presentation.response.QueryPostResponse;
 import com.gple.backend.domain.post.service.*;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -51,16 +47,13 @@ public class PostController {
         return ResponseEntity.noContent().build();
     }
 
-    /**
-     * 내가 올린 게시물을 불러온다.
-    */
     @GetMapping("my")
-    public ResponseEntity<List<QueryAllMyPostResponse>> getMyPost(){
+    public ResponseEntity<List<QueryPostResponse>> getMyPost(){
         return ResponseEntity.ok(queryAllMyPostService.execute());
     }
 
     @GetMapping("react")
-    public ResponseEntity<List<QueryReactedPostListResponse>> queryAllReactedPosts(){
+    public ResponseEntity<List<QueryPostResponse>> queryAllReactedPosts(){
         return ResponseEntity.ok(queryAllReactedPostService.execute());
     }
 }

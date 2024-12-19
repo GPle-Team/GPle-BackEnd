@@ -4,7 +4,8 @@ import com.gple.backend.domain.emoji.controller.dto.response.EmojiResponse;
 import com.gple.backend.domain.emoji.entity.Emoji;
 import com.gple.backend.domain.emoji.entity.EmojiType;
 import com.gple.backend.domain.emoji.repository.EmojiRepository;
-import com.gple.backend.domain.post.controller.dto.response.QueryReactedPostListResponse;
+import com.gple.backend.domain.post.controller.dto.common.AuthorResponse;
+import com.gple.backend.domain.post.controller.dto.presentation.response.QueryPostResponse;
 import com.gple.backend.domain.post.entity.Post;
 import com.gple.backend.domain.post.repository.PostRepository;
 import com.gple.backend.domain.tag.dto.response.TagResponse;
@@ -27,7 +28,7 @@ public class QueryAllReactedPostService {
     private final EmojiRepository emojiRepository;
 
     @Transactional(readOnly = true)
-    public List<QueryReactedPostListResponse> execute() {
+    public List<QueryPostResponse> execute() {
         User user = userUtil.getCurrentUser();
         List<Emoji> reactedPostEmojis = emojiRepository.findByUserId(user.getId());
 
@@ -39,8 +40,8 @@ public class QueryAllReactedPostService {
         return reactedPosts.stream().map(post -> {
             List<Tag> tags = post.getTag();
             List<TagResponse> tagDtoList = tags.stream().map(tag -> TagResponse.builder()
-                .userId(tag.getUser().getId())
-                .username(tag.getUser().getUsername())
+                .id(tag.getUser().getId())
+                .name(tag.getUser().getName())
                 .build()
             ).toList();
 
@@ -54,8 +55,14 @@ public class QueryAllReactedPostService {
                 .congCount(getEmojiCount(emojis, EmojiType.CONGRATULATION))
                 .build();
 
-            return QueryReactedPostListResponse.builder()
-                .postId(post.getId())
+            return QueryPostResponse.builder()
+                .author(AuthorResponse.builder()
+                    .grade(post.getUser().getGrade())
+                    .name(post.getUser().getName())
+                    .id(post.getUser().getId())
+                    .build()
+                )
+                .id(post.getId())
                 .title(post.getTitle())
                 .location(post.getLocation())
                 .tagList(tagDtoList)

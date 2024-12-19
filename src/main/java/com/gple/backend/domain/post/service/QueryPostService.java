@@ -4,7 +4,8 @@ import com.gple.backend.domain.emoji.controller.dto.response.EmojiResponse;
 import com.gple.backend.domain.emoji.entity.Emoji;
 import com.gple.backend.domain.emoji.entity.EmojiType;
 import com.gple.backend.domain.emoji.repository.EmojiRepository;
-import com.gple.backend.domain.post.controller.dto.response.QueryPostResponse;
+import com.gple.backend.domain.post.controller.dto.common.AuthorResponse;
+import com.gple.backend.domain.post.controller.dto.presentation.response.QueryPostResponse;
 import com.gple.backend.domain.post.entity.Post;
 import com.gple.backend.domain.post.repository.PostRepository;
 import com.gple.backend.domain.tag.dto.response.TagResponse;
@@ -31,15 +32,21 @@ public class QueryPostService {
         List<TagResponse> tagResponse = post.getTag().stream().map(tag -> {
             User user = tag.getUser();
             return TagResponse.builder()
-                    .userId(user.getId())
-                    .username(user.getUsername())
+                    .id(user.getId())
+                    .name(user.getName())
                     .build();
         }).toList();
 
         List<Emoji> countEmoji = emojiRepository.findEmojiByPostId(post.getId());
 
         return QueryPostResponse.builder()
-                .postId(post.getId())
+                .id(post.getId())
+                .author(AuthorResponse.builder()
+                    .grade(post.getUser().getGrade())
+                    .name(post.getUser().getName())
+                    .id(post.getUser().getId())
+                    .build()
+                )
                 .title(post.getTitle())
                 .location(post.getLocation())
                 .imageUrl(post.getImageUrl())

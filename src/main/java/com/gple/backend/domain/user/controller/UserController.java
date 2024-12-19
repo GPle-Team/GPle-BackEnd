@@ -24,6 +24,11 @@ public class UserController {
         return ResponseEntity.ok().build();
     }
 
+    @GetMapping("/profile")
+    public ResponseEntity<GetUserResponse> getProfile(){
+        return ResponseEntity.ok(userService.getUserProfile());
+    }
+
     @GetMapping
     public ResponseEntity<List<GetUserResponse>> getUserList(){
         return ResponseEntity.ok(userService.getUserList());

@@ -1,6 +1,6 @@
 package com.gple.backend.domain.post.service;
 
-import com.gple.backend.domain.post.controller.dto.request.CreatePostRequest;
+import com.gple.backend.domain.post.controller.dto.presentation.request.CreatePostRequest;
 import com.gple.backend.domain.post.entity.Post;
 import com.gple.backend.domain.post.repository.PostRepository;
 import com.gple.backend.domain.tag.entity.Tag;

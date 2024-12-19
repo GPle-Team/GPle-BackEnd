@@ -1,6 +1,7 @@
-package com.gple.backend.domain.post.controller.dto.response;
+package com.gple.backend.domain.post.controller.dto.presentation.response;
 
 import com.gple.backend.domain.emoji.controller.dto.response.EmojiResponse;
+import com.gple.backend.domain.post.controller.dto.common.AuthorResponse;
 import com.gple.backend.domain.tag.dto.response.TagResponse;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -14,8 +15,8 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class QueryAllMyPostResponse {
-    private Long postId;
+public class QueryPostResponse {
+    private Long id;
 
     private String title;
 
@@ -24,6 +25,8 @@ public class QueryAllMyPostResponse {
     private String location;
 
     private List<TagResponse> tagList;
+
+    private AuthorResponse author;
 
     private EmojiResponse emojiList;
 
