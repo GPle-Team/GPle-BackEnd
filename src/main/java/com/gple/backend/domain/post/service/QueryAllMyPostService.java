@@ -3,10 +3,10 @@ package com.gple.backend.domain.post.service;
 import com.gple.backend.domain.emoji.controller.dto.response.EmojiResponse;
 import com.gple.backend.domain.emoji.entity.Emoji;
 import com.gple.backend.domain.emoji.entity.EmojiType;
-import com.gple.backend.domain.post.controller.dto.response.QueryMyAllPostResDto;
+import com.gple.backend.domain.post.controller.dto.response.QueryAllMyPostResponse;
 import com.gple.backend.domain.post.entity.Post;
 import com.gple.backend.domain.post.repository.PostRepository;
-import com.gple.backend.domain.tag.dto.response.TagResDto;
+import com.gple.backend.domain.tag.dto.response.TagResponse;
 import com.gple.backend.domain.tag.entity.Tag;
 import com.gple.backend.domain.user.entity.User;
 import com.gple.backend.global.util.UserUtil;
@@ -18,18 +18,18 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class QueryMyAllPostService {
+public class QueryAllMyPostService {
     private final PostRepository postRepository;
     private final UserUtil userUtil;
 
     @Transactional(readOnly = true)
-    public List<QueryMyAllPostResDto> execute() {
+    public List<QueryAllMyPostResponse> execute() {
         User user = userUtil.getCurrentUser();
         List<Post> posts = postRepository.findByUserId(user.getId());
 
         return posts.stream().map(post -> {
             List<Tag> tags = post.getTag();
-            List<TagResDto> tagDtoList = tags.stream().map(tag -> TagResDto.builder()
+            List<TagResponse> tagDtoList = tags.stream().map(tag -> TagResponse.builder()
                 .userId(tag.getUser().getId())
                 .username(tag.getUser().getUsername())
                 .build()
@@ -45,7 +45,7 @@ public class QueryMyAllPostService {
                 .congCount(getEmojiCount(emojis, EmojiType.CONGRATULATION))
                 .build();
 
-            return QueryMyAllPostResDto.builder()
+            return QueryAllMyPostResponse.builder()
                 .postId(post.getId())
                 .title(post.getTitle())
                 .location(post.getLocation())

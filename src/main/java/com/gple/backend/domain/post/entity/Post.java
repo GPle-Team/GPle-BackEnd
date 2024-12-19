@@ -13,6 +13,7 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 
 @Entity
 @Getter
@@ -40,6 +41,19 @@ public class Post {
     @Convert(converter = StringListConverter.class)
     @Column(name = "image_url", nullable = false, columnDefinition = "VARCHAR(256)")
     private List<String> imageUrl;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Post post = (Post) o;
+        return Objects.equals(id, post.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
+    }
 
     @Column(name = "location", nullable = false)
     private String location;
