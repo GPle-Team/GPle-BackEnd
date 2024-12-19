@@ -1,4 +1,4 @@
-package com.gple.backend.domain.post.controller.dto.request;
+package com.gple.backend.domain.post.controller.dto.presentation.request;
 
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;

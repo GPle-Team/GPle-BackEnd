@@ -26,15 +26,19 @@ public class UserService {
         User user = userUtil.getCurrentUser();
 
         if(request.getName() != null &&
-            !user.getUsername().equals(request.getName())
+            !user.getName().equals(request.getName())
         ){
-            user.setUsername(request.getName());
+            user.setName(request.getName());
         }
 
         if(request.getNumber() != null &&
-            !user.getStudentNumber().equals(request.getNumber())
+            !user.getNumber().equals(request.getNumber())
         ){
-            user.setStudentNumber(request.getNumber());
+            user.setStudentNumber(
+                Long.parseLong(request.getNumber().substring(0, 1)),
+                Long.parseLong(request.getNumber().substring(1, 1)),
+                Long.parseLong(request.getNumber().substring(2, 2))
+            );
         }
 
         if(!request.getFile().isEmpty()){
@@ -51,16 +55,27 @@ public class UserService {
 
         return userList.stream().map(user -> {
             long grade = 0L;
-            if(user.getStudentNumber() != null){
-                grade = Long.parseLong(user.getStudentNumber().substring(0, 1));
+            if(user.getNumber() != null){
+                grade = user.getGrade();
             }
 
             return GetUserResponse.builder()
-                .name(user.getUsername())
+                .name(user.getName())
                 .id(user.getId())
                 .grade(grade)
                 .profileImage(user.getProfileImage())
                 .build();
         }).toList();
+    }
+
+    @Transactional
+    public GetUserResponse getUserProfile(){
+        User user = userUtil.getCurrentUser();
+        return GetUserResponse.builder()
+            .profileImage(user.getProfileImage())
+            .grade(user.getGrade())
+            .name(user.getName())
+            .id(user.getId())
+            .build();
     }
 }

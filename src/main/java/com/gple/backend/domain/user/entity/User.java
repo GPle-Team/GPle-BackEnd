@@ -20,9 +20,13 @@ public class User {
     @Column(nullable = false)
     private String email;
 
-    private String username;
+    private String name;
 
-    private String studentNumber;
+    private Long grade;
+
+    private Long classname;
+
+    private Long number;
 
     private String password;
 
@@ -31,9 +35,9 @@ public class User {
 
     private String profileImage;
 
-    public void setStudentProfile(String username, String studentNumber, String profileImage){
-        this.username = username;
-        this.studentNumber = studentNumber;
-        this.profileImage = profileImage;
+    public void setStudentNumber(Long grade, Long classname, Long number){
+        this.grade = grade;
+        this.classname = classname;
+        this.number = number;
     }
 }
