@@ -1,6 +1,6 @@
 package com.gple.backend.domain.file.dto.response;
 
-public record UploadImageResDto (
+public record UploadImageResponse(
         String url
 ) {
 }

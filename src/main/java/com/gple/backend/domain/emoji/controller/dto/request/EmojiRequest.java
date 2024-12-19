@@ -7,7 +7,7 @@ import lombok.Getter;
 
 @Getter
 @Builder
-public class EmojiReqDto {
+public class EmojiRequest {
     @NotNull
     private Long postId;
 

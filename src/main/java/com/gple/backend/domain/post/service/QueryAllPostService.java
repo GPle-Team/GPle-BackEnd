@@ -1,13 +1,13 @@
 package com.gple.backend.domain.post.service;
 
-import com.gple.backend.domain.emoji.controller.dto.response.EmojiResDto;
+import com.gple.backend.domain.emoji.controller.dto.response.EmojiResponse;
 import com.gple.backend.domain.emoji.entity.Emoji;
 import com.gple.backend.domain.emoji.entity.EmojiType;
 import com.gple.backend.domain.emoji.repository.EmojiRepository;
-import com.gple.backend.domain.post.controller.dto.response.QueryPostResDto;
+import com.gple.backend.domain.post.controller.dto.response.QueryPostResponse;
 import com.gple.backend.domain.post.entity.Post;
 import com.gple.backend.domain.post.repository.PostRepository;
-import com.gple.backend.domain.tag.dto.response.TagResDto;
+import com.gple.backend.domain.tag.dto.response.TagResponse;
 import com.gple.backend.domain.user.entity.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -24,24 +24,24 @@ public class QueryAllPostService {
     private final EmojiRepository emojiRepository;
 
     @Transactional(readOnly = true)
-    public List<QueryPostResDto> execute() {
+    public List<QueryPostResponse> execute() {
         List<Post> posts = postRepository.findAll();
 
         return posts.stream().map(post -> {
-            List<TagResDto> tagResDto = post.getTag().stream().map(tag -> {
+            List<TagResponse> tagResponse = post.getTag().stream().map(tag -> {
                 User user = tag.getUser();
-                return TagResDto.builder().userId(user.getId()).username(user.getUsername()).build();
+                return TagResponse.builder().userId(user.getId()).username(user.getUsername()).build();
             }).toList();
 
             List<Emoji> countEmoji = emojiRepository.findEmojiByPostId(post.getId());
 
-            return new QueryPostResDto(
+            return new QueryPostResponse(
                     post.getId(),
                     post.getTitle(),
                     post.getImageUrl(),
                     post.getLocation(),
-                    tagResDto,
-                    EmojiResDto.builder()
+                tagResponse,
+                    EmojiResponse.builder()
                             .heartCount(getEmojiCount(countEmoji, EmojiType.HEART))
                             .congCount(getEmojiCount(countEmoji, EmojiType.CONGRATULATION))
                             .thumbsCount(getEmojiCount(countEmoji, EmojiType.THUMBSUP))
