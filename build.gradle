@@ -45,7 +45,8 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
 
     // Google OAuth2
-    compileOnly 'com.google.api-client:google-api-client:1.32.1'
+    implementation 'com.google.api-client:google-api-client:2.7.1'
+    implementation 'com.google.http-client:google-http-client:1.43.3'
 
     // Redis
     implementation 'org.springframework.data:spring-data-redis'
