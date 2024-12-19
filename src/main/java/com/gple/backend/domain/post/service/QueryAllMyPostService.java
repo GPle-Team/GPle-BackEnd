@@ -33,8 +33,8 @@ public class QueryAllMyPostService {
         return posts.stream().map(post -> {
             List<Tag> tags = post.getTag();
             List<TagResponse> tagDtoList = tags.stream().map(tag -> TagResponse.builder()
-                .userId(tag.getUser().getId())
-                .username(tag.getUser().getName())
+                .id(tag.getUser().getId())
+                .name(tag.getUser().getName())
                 .build()
             ).toList();
 

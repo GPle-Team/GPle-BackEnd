@@ -32,8 +32,8 @@ public class QueryPostService {
         List<TagResponse> tagResponse = post.getTag().stream().map(tag -> {
             User user = tag.getUser();
             return TagResponse.builder()
-                    .userId(user.getId())
-                    .username(user.getName())
+                    .id(user.getId())
+                    .name(user.getName())
                     .build();
         }).toList();
 

@@ -31,7 +31,7 @@ public class QueryAllPostService {
         return posts.stream().map(post -> {
             List<TagResponse> tagResponse = post.getTag().stream().map(tag -> {
                 User user = tag.getUser();
-                return TagResponse.builder().userId(user.getId()).username(user.getName()).build();
+                return TagResponse.builder().id(user.getId()).name(user.getName()).build();
             }).toList();
 
             List<Emoji> countEmoji = emojiRepository.findEmojiByPostId(post.getId());
