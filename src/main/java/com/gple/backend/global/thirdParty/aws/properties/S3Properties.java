@@ -1,4 +1,4 @@
-package com.gple.backend.global.thirdParty.aws.s3.properties;
+package com.gple.backend.global.thirdParty.aws.properties;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 

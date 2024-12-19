@@ -5,6 +5,6 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 @ConfigurationPropertiesScan(basePackages = {
-        "com.gple.backend.global.thirdParty.aws.s3.properties"})
+        "com.gple.backend.global.thirdParty.aws.properties"})
 public class PropertiesScanConfig {
 }
