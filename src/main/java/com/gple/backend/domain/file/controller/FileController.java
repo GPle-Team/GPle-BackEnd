@@ -4,10 +4,7 @@ import com.gple.backend.global.thirdParty.aws.s3.dto.response.UploadImageResDto;
 import com.gple.backend.global.thirdParty.aws.s3.dto.response.UploadImagesResDto;
 import com.gple.backend.global.thirdParty.aws.s3.service.S3Service;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;

@@ -15,9 +15,9 @@ public class TokenSet {
     public WebTokenResponse toWebTokenResponse(){
         return WebTokenResponse.builder()
             .accessToken(accessToken.getToken())
-            .accessExpires(accessToken.getExpires())
+            .accessExpiredAt(accessToken.getExpires())
             .refreshToken(refreshToken.getToken())
-            .refreshExpires(refreshToken.getExpires())
+            .refreshExpiredAt(refreshToken.getExpires())
             .build();
     }
 }

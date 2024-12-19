@@ -1,4 +1,4 @@
-package com.gple.backend.global.thirdParty.aws.s3.dto.response;
+package com.gple.backend.domain.file.dto.response;
 
 import java.util.List;
 

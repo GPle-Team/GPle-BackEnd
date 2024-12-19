@@ -11,10 +11,9 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class WebTokenResponse {
     private String accessToken;
-    private String accessExpires;
+    private String accessExpiredAt;
     private String refreshToken;
-    private String refreshExpires;
+    private String refreshExpiredAt;
 }
