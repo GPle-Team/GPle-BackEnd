@@ -3,6 +3,7 @@ package com.gple.backend.domain.post.controller;
 import com.gple.backend.domain.post.controller.dto.presentation.request.CreatePostRequest;
 import com.gple.backend.domain.post.controller.dto.presentation.request.QueryPostsByLocationRequest;
 import com.gple.backend.domain.post.controller.dto.presentation.response.QueryPostResponse;
+import com.gple.backend.domain.post.entity.Location;
 import com.gple.backend.domain.post.service.*;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -45,9 +46,9 @@ public class PostController {
 
     @GetMapping("location")
     public ResponseEntity<List<QueryPostResponse>> getPostsByLocation(
-        @RequestBody QueryPostsByLocationRequest queryPostsByLocationRequest
+        @RequestParam("type") Location location
     ){
-           List<QueryPostResponse> posts = queryPostsByLocationService.execute(queryPostsByLocationRequest);
+           List<QueryPostResponse> posts = queryPostsByLocationService.execute(location);
            return ResponseEntity.ok(posts);
     }
 

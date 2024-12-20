@@ -115,32 +115,46 @@ public class FileService {
         }
     }
 
-    private MultipartFile resizeImage(MultipartFile imageFile) throws IOException {
-        BufferedImage image = ImageIO.read(imageFile.getInputStream());
+    public MultipartFile resizeImage(MultipartFile imageFile) throws IOException {
+        BufferedImage originalImage = ImageIO.read(imageFile.getInputStream());
 
-        int originWidth = image.getWidth();
-        int originHeight = image.getHeight();
+        int originWidth = originalImage.getWidth();
+        int originHeight = originalImage.getHeight();
 
-        int changedWidth, changedHeight;
-        if(originWidth > originHeight){
-            changedWidth = 390;
-            changedHeight = (originHeight * 390) / originWidth;
+        int newWidth, newHeight;
+        if (originWidth > originHeight) {
+            newWidth = 390;
+            newHeight = (originHeight * 390) / originWidth;
         } else {
-            changedHeight = 390;
-            changedWidth = (originWidth * 390) / originHeight;
+            newHeight = 390;
+            newWidth = (originWidth * 390) / originHeight;
         }
 
-        Image newImage = image.getScaledInstance(changedWidth, changedHeight, Image.SCALE_SMOOTH);
-        BufferedImage resizedImage = new BufferedImage(changedWidth, changedHeight, BufferedImage.TYPE_INT_RGB);
+        Image tmpImage = originalImage.getScaledInstance(newWidth, newHeight, Image.SCALE_SMOOTH);
+        BufferedImage resizedImage = new BufferedImage(newWidth, newHeight, BufferedImage.TYPE_INT_RGB);
 
-        Graphics graphics = resizedImage.getGraphics();
-        graphics.drawImage(newImage, 0, 0, null);
-        graphics.dispose();
+        Graphics2D g2d = resizedImage.createGraphics();
+        g2d.drawImage(tmpImage, 0, 0, null);
+        g2d.dispose();
+
+        BufferedImage outputImage = new BufferedImage(390, 390, BufferedImage.TYPE_INT_RGB);
+        Graphics2D g = outputImage.createGraphics();
+        g.setColor(new Color(0x263034));
+        g.fillRect(0, 0, 390, 390);
+
+        int x = (390 - newWidth) / 2;
+        int y = (390 - newHeight) / 2;
+        g.drawImage(resizedImage, x, y, null);
+        g.dispose();
 
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        ImageIO.write(resizedImage, "jpg", outputStream);
-        byte[] imageByte = outputStream.toByteArray();
+        ImageIO.write(outputImage, "jpg", outputStream);
+        byte[] imageBytes = outputStream.toByteArray();
 
-        return new ImageMultipartFile(imageByte, generateFileName("jpg"), "image/jpeg");
+        return new ImageMultipartFile(
+            imageBytes,
+            generateFileName("jpg"),
+            "image/jpeg"
+        );
     }
 }

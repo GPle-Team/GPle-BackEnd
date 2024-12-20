@@ -2,6 +2,7 @@ package com.gple.backend.domain.post.service;
 
 import com.gple.backend.domain.post.controller.dto.presentation.request.QueryPostsByLocationRequest;
 import com.gple.backend.domain.post.controller.dto.presentation.response.QueryPostResponse;
+import com.gple.backend.domain.post.entity.Location;
 import com.gple.backend.domain.post.entity.Post;
 import com.gple.backend.domain.post.repository.PostRepository;
 import lombok.RequiredArgsConstructor;
@@ -18,8 +19,8 @@ public class QueryPostsByLocationService {
     private final PostRepository postRepository;
 
     @Transactional(readOnly = true)
-    public List<QueryPostResponse> execute(QueryPostsByLocationRequest queryPostsByLocationRequest) {
-        List<Post> posts = postRepository.findByLocation(queryPostsByLocationRequest.getLocation());
+    public List<QueryPostResponse> execute(Location location) {
+        List<Post> posts = postRepository.findByLocation(location);
         return postListToDto(posts);
     }
 }
