@@ -23,7 +23,7 @@ public class QueryPostResponse {
 
     private List<String> imageUrl;
 
-    private Location location;
+    private String location;
 
     private List<TagResponse> tagList;
 

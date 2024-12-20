@@ -47,7 +47,7 @@ public class PostCommon {
             )
             .id(post.getId())
             .title(post.getTitle())
-            .location(post.getLocation())
+            .location(post.getLocation().getName())
             .tagList(tagDtoList)
             .createdTime(post.getCreatedTime())
             .emojiList(emojiDtoList)
