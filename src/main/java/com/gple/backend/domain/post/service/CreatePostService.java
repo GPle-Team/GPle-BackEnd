@@ -7,6 +7,7 @@ import com.gple.backend.domain.tag.entity.Tag;
 import com.gple.backend.domain.tag.repository.TagRepository;
 import com.gple.backend.domain.user.entity.User;
 import com.gple.backend.domain.user.repository.UserRepository;
+import com.gple.backend.global.util.UserUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,14 +21,17 @@ public class CreatePostService {
     private final PostRepository postRepository;
     private final UserRepository userRepository;
     private final TagRepository tagRepository;
+    private final UserUtil userUtil;
 
     @Transactional
     public void execute(CreatePostRequest reqDto) {
+        User currentUser = userUtil.getCurrentUser();
         Post post = Post.builder()
                 .title(reqDto.getTitle())
                 .location(reqDto.getLocation())
                 .imageUrl(reqDto.getImageUrl())
                 .createdTime(LocalDateTime.now())
+                .user(currentUser)
                 .build();
 
         Post createdPost = postRepository.save(post);
@@ -35,10 +39,10 @@ public class CreatePostService {
 
         List<Tag> tagList = findUserList.stream().map(user ->
             Tag.builder()
-                    .id(0L)
-                    .post(createdPost)
-                    .user(user)
-                    .build()
+                .id(0L)
+                .post(createdPost)
+                .user(user)
+                .build()
         ).toList();
 
         tagRepository.saveAll(tagList);
