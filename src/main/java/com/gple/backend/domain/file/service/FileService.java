@@ -75,11 +75,16 @@ public class FileService {
         List<String> fileList = new ArrayList<>();
 
         for (MultipartFile multipartFile : multipartFiles) {
-
             String originalFileName = multipartFile.getOriginalFilename();
             String fileExtension = StringUtils.getFilenameExtension(originalFileName);
             validateFileExtensionType(Objects.requireNonNull(fileExtension));
             String fileName = generateFileName(fileExtension);
+
+            try {
+                multipartFile = resizeImage(multipartFile);
+            } catch (IOException e){
+                throw new ExpectedException("파일 사이즈를 변환하는 과정에서 문제가 생겼습니다.", HttpStatus.BAD_REQUEST);
+            }
 
             try {
                 S3Resource s3Resource = s3Template.upload(
