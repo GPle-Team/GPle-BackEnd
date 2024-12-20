@@ -14,16 +14,7 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class CreatePostRequest {
-    @NotNull
-    private String title;
-
+public class QueryPostsByLocationRequest {
     @NotNull
     private Location location;
-
-    private List<Long> userList;
-
-    @NotNull
-    @Size(max = 3)
-    private List<String> imageUrl;
 }

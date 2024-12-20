@@ -13,7 +13,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class QueryAllPostService {
+public class QueryPostsService {
     private final PostRepository postRepository;
 
     @Transactional(readOnly = true)

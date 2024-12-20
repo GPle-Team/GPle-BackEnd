@@ -1,6 +1,10 @@
 package com.gple.backend.domain.auth.service;
 
 import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeTokenRequest;
+import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
+import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
+import com.google.api.client.http.javanet.NetHttpTransport;
+import com.google.api.client.json.gson.GsonFactory;
 import com.gple.backend.domain.auth.controller.dto.common.response.TokenSet;
 import com.google.api.client.googleapis.auth.oauth2.GoogleTokenResponse;
 import com.google.api.client.http.HttpTransport;
@@ -19,16 +23,20 @@ import com.gple.backend.global.exception.HttpException;
 import com.gple.backend.global.security.dto.TokenType;
 import com.gple.backend.global.security.jwt.JwtProvider;
 import com.gple.backend.global.util.UserUtil;
+import io.restassured.path.json.mapper.factory.Jackson2ObjectMapperFactory;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.json.Jackson2ObjectMapperFactoryBean;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import java.io.IOException;
+import java.security.GeneralSecurityException;
+import java.util.Collections;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -85,6 +93,34 @@ public class AuthService {
         saveRefreshToken(user.getId(), refreshToken.getToken());
 
         return tokenSet.toWebTokenResponse();
+    }
+
+    @Transactional
+    public WebTokenResponse googleLoginByIdToken(String idTokenString) {
+        GoogleIdTokenVerifier verifier = new GoogleIdTokenVerifier.Builder(new NetHttpTransport(), new GsonFactory())
+            .setAudience(Collections.singletonList(clientId)) // 클라이언트 ID
+            .build();
+
+        try {
+            GoogleIdToken idToken = verifier.verify(idTokenString);
+            String email = idToken.getPayload().getEmail();
+
+            validEmail(email);
+            existOrSaveUser(email);
+
+            User user = userRepository.findByEmail(email).orElseThrow(() ->
+                new HttpException(HttpStatus.BAD_REQUEST, "예기치 않은 오류로 유저를 찾을 수 없습니다.")
+            );
+
+            TokenSet tokenSet = jwtProvider.generateTokenSet(user.getId().toString());
+            TokenResponse refreshToken = tokenSet.getRefreshToken();
+
+            saveRefreshToken(user.getId(), refreshToken.getToken());
+
+            return tokenSet.toWebTokenResponse();
+        } catch (GeneralSecurityException | IOException e){
+            throw new HttpException(HttpStatus.UNAUTHORIZED, "");
+        }
     }
 
     @Transactional

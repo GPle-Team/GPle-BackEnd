@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 public class AuthController {
     private final AuthService authService;
 
-    @PostMapping("/google/login")
+    @GetMapping("/google/login")
     public ResponseEntity<WebTokenResponse> joinUser(@RequestParam(name = "code") String code){
         return ResponseEntity.ok(authService.googleLogin(code));
     }
