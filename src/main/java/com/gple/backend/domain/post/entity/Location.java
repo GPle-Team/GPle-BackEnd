@@ -1,10 +1,18 @@
 package com.gple.backend.domain.post.entity;
 
-public enum Location {
-    GYM, // 금봉관
-    TRAINING_CENTER, // 체력단련실
-    PLAYGROUND, // 운동장
-    DOMITORY, // 기숙사
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 
-    WALKING_TRAIL; // 산책로
+@Getter
+@RequiredArgsConstructor
+public enum Location {
+    GYM("금봉관"),
+    TRAINING_CENTER("체력단련실"),
+    PLAYGROUND("운동장"),
+    DOMITORY("동행관"),
+    HOME("본관"),
+    WALKING_TRAIL("산책로");
+
+    private final String name;
 }
