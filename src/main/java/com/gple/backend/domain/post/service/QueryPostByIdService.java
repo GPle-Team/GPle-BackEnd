@@ -3,27 +3,24 @@ package com.gple.backend.domain.post.service;
 import com.gple.backend.domain.post.controller.dto.presentation.response.QueryPostResponse;
 import com.gple.backend.domain.post.entity.Post;
 import com.gple.backend.domain.post.repository.PostRepository;
-import com.gple.backend.domain.user.entity.User;
-import com.gple.backend.global.util.UserUtil;
+import com.gple.backend.global.exception.ExpectedException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-
-import static com.gple.backend.domain.post.common.PostCommon.postListToDto;
+import static com.gple.backend.domain.post.common.PostCommon.postToDto;
 
 @Service
 @RequiredArgsConstructor
-public class QueryAllMyPostService {
+public class QueryPostByIdService {
     private final PostRepository postRepository;
-    private final UserUtil userUtil;
 
     @Transactional(readOnly = true)
-    public List<QueryPostResponse> execute() {
-        User user = userUtil.getCurrentUser();
-        List<Post> posts = postRepository.findByUserId(user.getId());
+    public QueryPostResponse execute(Long postId) {
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new ExpectedException("게시물을 찾을 수 없습니다.", HttpStatus.NOT_FOUND));
 
-        return postListToDto(posts);
+        return postToDto(post);
     }
 }

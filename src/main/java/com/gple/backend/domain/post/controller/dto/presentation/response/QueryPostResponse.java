@@ -2,6 +2,7 @@ package com.gple.backend.domain.post.controller.dto.presentation.response;
 
 import com.gple.backend.domain.emoji.controller.dto.response.EmojiResponse;
 import com.gple.backend.domain.post.controller.dto.common.AuthorResponse;
+import com.gple.backend.domain.post.entity.Location;
 import com.gple.backend.domain.tag.dto.response.TagResponse;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -22,7 +23,7 @@ public class QueryPostResponse {
 
     private List<String> imageUrl;
 
-    private String location;
+    private Location location;
 
     private List<TagResponse> tagList;
 

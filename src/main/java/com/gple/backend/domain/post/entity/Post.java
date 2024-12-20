@@ -39,8 +39,15 @@ public class Post {
     private List<Emoji> emoji;
 
     @Convert(converter = StringListConverter.class)
-    @Column(name = "image_url", nullable = false, columnDefinition = "VARCHAR(256)")
+    @Column(name = "image_url", nullable = false, columnDefinition = "VARCHAR(512)")
     private List<String> imageUrl;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "location", nullable = false)
+    private Location location;
+
+    @Column(name = "created_time", nullable = false)
+    private LocalDateTime createdTime;
 
     @Override
     public boolean equals(Object o) {
@@ -54,10 +61,4 @@ public class Post {
     public int hashCode() {
         return Objects.hash(id);
     }
-
-    @Column(name = "location", nullable = false)
-    private String location;
-
-    @Column(name = "created_time", nullable = false)
-    private LocalDateTime createdTime;
 }

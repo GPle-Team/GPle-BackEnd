@@ -1,6 +1,7 @@
 package com.gple.backend.domain.post.controller;
 
 import com.gple.backend.domain.post.controller.dto.presentation.request.CreatePostRequest;
+import com.gple.backend.domain.post.controller.dto.presentation.request.QueryPostsByLocationRequest;
 import com.gple.backend.domain.post.controller.dto.presentation.response.QueryPostResponse;
 import com.gple.backend.domain.post.service.*;
 import jakarta.validation.Valid;
@@ -18,10 +19,11 @@ public class PostController {
 
     private final CreatePostService createPostService;
     private final DeletePostService deletePostService;
-    private final QueryPostService queryPostService;
-    private final QueryAllPostService queryAllPostService;
-    private final QueryAllMyPostService queryAllMyPostService;
-    private final QueryAllReactedPostService queryAllReactedPostService;
+    private final QueryPostByIdService queryPostByIdService;
+    private final QueryPostsService queryPostsService;
+    private final QueryMyPostsService queryMyPostsService;
+    private final QueryReactedPostsService queryReactedPostsService;
+    private final QueryPostsByLocationService queryPostsByLocationService;
 
     @PostMapping
     public ResponseEntity<Void> post(@RequestBody @Valid CreatePostRequest reqDto) {
@@ -31,14 +33,22 @@ public class PostController {
 
     @GetMapping("/{postId}")
     public ResponseEntity<QueryPostResponse> queryPost(@Valid @PathVariable Long postId) {
-        QueryPostResponse post = queryPostService.execute(postId);
+        QueryPostResponse post = queryPostByIdService.execute(postId);
         return ResponseEntity.ok(post);
     }
 
     @GetMapping
     public ResponseEntity<List<QueryPostResponse>> queryAllPost() {
-        List<QueryPostResponse> postLists = queryAllPostService.execute();
-        return ResponseEntity.ok(postLists);
+        List<QueryPostResponse> posts = queryPostsService.execute();
+        return ResponseEntity.ok(posts);
+    }
+
+    @GetMapping("location")
+    public ResponseEntity<List<QueryPostResponse>> getPostsByLocation(
+        @RequestBody QueryPostsByLocationRequest queryPostsByLocationRequest
+    ){
+           List<QueryPostResponse> posts = queryPostsByLocationService.execute(queryPostsByLocationRequest);
+           return ResponseEntity.ok(posts);
     }
 
     @DeleteMapping("/{postId}")
@@ -49,11 +59,11 @@ public class PostController {
 
     @GetMapping("my")
     public ResponseEntity<List<QueryPostResponse>> getMyPost(){
-        return ResponseEntity.ok(queryAllMyPostService.execute());
+        return ResponseEntity.ok(queryMyPostsService.execute());
     }
 
     @GetMapping("react")
     public ResponseEntity<List<QueryPostResponse>> queryAllReactedPosts(){
-        return ResponseEntity.ok(queryAllReactedPostService.execute());
+        return ResponseEntity.ok(queryReactedPostsService.execute());
     }
 }
