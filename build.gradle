@@ -67,6 +67,9 @@ dependencies {
 
     // AWS S3
     implementation 'io.awspring.cloud:spring-cloud-aws-starter-s3:3.0.1'
+
+    // Image
+    implementation 'com.drewnoakes:metadata-extractor:2.18.0'
 }
 
 dependencyManagement {
