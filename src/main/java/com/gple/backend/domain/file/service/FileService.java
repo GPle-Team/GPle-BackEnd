@@ -1,5 +1,11 @@
 package com.gple.backend.domain.file.service;
 
+import com.drew.imaging.ImageMetadataReader;
+import com.drew.imaging.ImageProcessingException;
+import com.drew.metadata.Metadata;
+import com.drew.metadata.MetadataException;
+import com.drew.metadata.exif.ExifDirectoryBase;
+import com.drew.metadata.exif.ExifIFD0Directory;
 import com.gple.backend.global.exception.ExpectedException;
 import com.gple.backend.global.file.ImageMultipartFile;
 import com.gple.backend.global.thirdParty.aws.properties.S3Properties;
@@ -44,6 +50,8 @@ public class FileService {
             multipartFile = resizeImage(multipartFile);
         } catch (IOException e){
             throw new ExpectedException("파일 사이즈를 변환하는 과정에서 문제가 생겼습니다.", HttpStatus.BAD_REQUEST);
+        } catch (ImageProcessingException | MetadataException e) {
+            throw new RuntimeException(e);
         }
 
         try {
@@ -84,6 +92,8 @@ public class FileService {
                 multipartFile = resizeImage(multipartFile);
             } catch (IOException e){
                 throw new ExpectedException("파일 사이즈를 변환하는 과정에서 문제가 생겼습니다.", HttpStatus.BAD_REQUEST);
+            } catch (ImageProcessingException | MetadataException e) {
+                throw new RuntimeException(e);
             }
 
             try {
@@ -120,8 +130,11 @@ public class FileService {
         }
     }
 
-    public MultipartFile resizeImage(MultipartFile imageFile) throws IOException {
-        BufferedImage originalImage = ImageIO.read(imageFile.getInputStream());
+    public MultipartFile resizeImage(MultipartFile file) throws IOException, ImageProcessingException, MetadataException {
+        Metadata metadata = ImageMetadataReader.readMetadata(file.getInputStream());
+
+        int orientation = getOrientation(metadata);
+        BufferedImage originalImage = rotateImage(ImageIO.read(file.getInputStream()), orientation);
 
         int originWidth = originalImage.getWidth();
         int originHeight = originalImage.getHeight();
@@ -161,5 +174,37 @@ public class FileService {
             generateFileName("jpg"),
             "image/jpeg"
         );
+    }
+
+    private static int getOrientation(Metadata metadata) throws MetadataException {
+        ExifIFD0Directory exif = metadata.getFirstDirectoryOfType(ExifIFD0Directory.class);
+        if (exif != null) {
+            return exif.getInt(ExifDirectoryBase.TAG_ORIENTATION);
+        }
+
+        return 1;
+    }
+
+    private BufferedImage rotateImage(BufferedImage image, int orientation) {
+        return switch (orientation) {
+            case 3 -> rotate(image, 180);
+            case 6 -> rotate(image, 90);
+            case 8 -> rotate(image, -90);
+            default -> image;
+        };
+    }
+
+    private BufferedImage rotate(BufferedImage image, int angle) {
+        int width = image.getWidth();
+        int height = image.getHeight();
+
+        BufferedImage rotatedImage = new BufferedImage(width, height, image.getType());
+        Graphics2D g2d = rotatedImage.createGraphics();
+
+        g2d.rotate(Math.toRadians(angle), (double) width / 2, (double) height / 2);
+        g2d.drawImage(image, null, 0, 0);
+        g2d.dispose();
+
+        return rotatedImage;
     }
 }
