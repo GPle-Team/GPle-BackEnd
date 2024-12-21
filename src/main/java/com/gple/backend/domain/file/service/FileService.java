@@ -14,6 +14,7 @@ import io.awspring.cloud.s3.S3Exception;
 import io.awspring.cloud.s3.S3Resource;
 import io.awspring.cloud.s3.S3Template;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -32,6 +33,7 @@ import java.util.Objects;
 import java.util.UUID;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class FileService {
     private final S3Template s3Template;
@@ -133,8 +135,12 @@ public class FileService {
     public MultipartFile resizeImage(MultipartFile file) throws IOException, ImageProcessingException, MetadataException {
         Metadata metadata = ImageMetadataReader.readMetadata(file.getInputStream());
 
+        log.info("0");
+
         int orientation = getOrientation(metadata);
         BufferedImage originalImage = rotateImage(ImageIO.read(file.getInputStream()), orientation);
+
+        log.info("1");
 
         int originWidth = originalImage.getWidth();
         int originHeight = originalImage.getHeight();
@@ -148,12 +154,16 @@ public class FileService {
             newWidth = (originWidth * 390) / originHeight;
         }
 
+        log.info("2");
+
         Image tmpImage = originalImage.getScaledInstance(newWidth, newHeight, Image.SCALE_SMOOTH);
         BufferedImage resizedImage = new BufferedImage(newWidth, newHeight, BufferedImage.TYPE_INT_RGB);
 
         Graphics2D g2d = resizedImage.createGraphics();
         g2d.drawImage(tmpImage, 0, 0, null);
         g2d.dispose();
+
+        log.info("3");
 
         BufferedImage outputImage = new BufferedImage(390, 390, BufferedImage.TYPE_INT_RGB);
         Graphics2D g = outputImage.createGraphics();
@@ -165,9 +175,13 @@ public class FileService {
         g.drawImage(resizedImage, x, y, null);
         g.dispose();
 
+        log.info("4");
+
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         ImageIO.write(outputImage, "jpg", outputStream);
         byte[] imageBytes = outputStream.toByteArray();
+
+        log.info("5");
 
         return new ImageMultipartFile(
             imageBytes,
