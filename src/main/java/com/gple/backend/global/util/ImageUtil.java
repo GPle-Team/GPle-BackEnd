@@ -8,6 +8,7 @@ import com.drew.metadata.exif.ExifDirectoryBase;
 import com.drew.metadata.exif.ExifIFD0Directory;
 import com.gple.backend.global.file.ImageMultipartFile;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.jpa.repository.Meta;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -22,10 +23,8 @@ import java.io.OutputStream;
 @Slf4j
 @Component
 public class ImageUtil {
-    public BufferedImage rotateExifImage(InputStream inputStream) throws MetadataException, IOException, ImageProcessingException {
-        Metadata metadata = ImageMetadataReader.readMetadata(inputStream);
+    public BufferedImage rotateExifImage(BufferedImage originalImage, Metadata metadata) throws MetadataException, IOException, ImageProcessingException {
         int orientation = getOrientation(metadata);
-        BufferedImage originalImage = ImageIO.read(inputStream);
 
         return switch (orientation) {
             case 3 -> rotate(originalImage, 180);
@@ -35,14 +34,11 @@ public class ImageUtil {
         };
     }
 
-    public MultipartFile resizeMultipartFile(MultipartFile file, String filename) throws IOException {
-        BufferedImage originalImage = null;
-        try (InputStream inputStream = file.getInputStream()){
-            originalImage = ImageIO.read(inputStream);
-            originalImage = rotateExifImage(inputStream);
-        } catch (ImageProcessingException | MetadataException e) {
-            log.info(e.getLocalizedMessage());
-        }
+    public MultipartFile resizeMultipartFile(MultipartFile file, String filename) throws IOException, ImageProcessingException, MetadataException {
+        BufferedImage originalImage = ImageIO.read(file.getInputStream());
+        Metadata metadata = ImageMetadataReader.readMetadata(file.getInputStream());
+
+        originalImage = rotateExifImage(originalImage, metadata);
 
         int originWidth = originalImage.getWidth();
         int originHeight = originalImage.getHeight();
