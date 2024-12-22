@@ -1,5 +1,6 @@
 package com.gple.backend.domain.user.service;
 
+import com.gple.backend.domain.file.service.FileService;
 import com.gple.backend.domain.user.controller.dto.web.request.CreateUserProfileRequest;
 import com.gple.backend.domain.user.controller.dto.web.response.GetUserResponse;
 import com.gple.backend.domain.user.entity.User;
@@ -19,7 +20,6 @@ public class UserService {
     private final UserUtil userUtil;
     private final UserRepository userRepository;
     private final S3Adapter s3Adapter;
-    private CreateUserProfileRequest request;
 
     @Transactional
     public void createUserProfile(CreateUserProfileRequest request){
@@ -31,8 +31,7 @@ public class UserService {
             user.setName(request.getName());
         }
 
-        if(request.getNumber() != null &&
-            !user.getNumber().equals(request.getNumber())
+        if(request.getNumber() != null
         ){
             user.setStudentNumber(
                 Long.parseLong(request.getNumber().substring(0, 1)),

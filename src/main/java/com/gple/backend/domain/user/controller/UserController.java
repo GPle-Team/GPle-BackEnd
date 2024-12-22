@@ -19,7 +19,7 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping(value = "/profile")
-    public ResponseEntity<Void> createUserProfile(@ModelAttribute CreateUserProfileRequest request){
+    public ResponseEntity<Void> createUserProfile(@Valid @ModelAttribute CreateUserProfileRequest request){
         userService.createUserProfile(request);
         return ResponseEntity.ok().build();
     }
