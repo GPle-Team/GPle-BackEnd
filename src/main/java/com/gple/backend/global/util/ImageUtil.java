@@ -22,11 +22,10 @@ import java.io.OutputStream;
 @Slf4j
 @Component
 public class ImageUtil {
-    public BufferedImage rotateExifImage(MultipartFile file) throws MetadataException, IOException, ImageProcessingException {
-        Metadata metadata = ImageMetadataReader.readMetadata(file.getInputStream());
-
+    public BufferedImage rotateExifImage(InputStream inputStream) throws MetadataException, IOException, ImageProcessingException {
+        Metadata metadata = ImageMetadataReader.readMetadata(inputStream);
         int orientation = getOrientation(metadata);
-        BufferedImage originalImage = ImageIO.read(file.getInputStream());
+        BufferedImage originalImage = ImageIO.read(inputStream);
 
         return switch (orientation) {
             case 3 -> rotate(originalImage, 180);
@@ -37,16 +36,12 @@ public class ImageUtil {
     }
 
     public MultipartFile resizeMultipartFile(MultipartFile file, String filename) throws IOException {
-
-        BufferedImage originalImage;
+        BufferedImage originalImage = null;
         try (InputStream inputStream = file.getInputStream()){
             originalImage = ImageIO.read(inputStream);
-        }
-
-        try {
-            originalImage = rotateExifImage(file);
-        } catch (MetadataException | ImageProcessingException e){
-            log.info("EXIF 처리 중 오류 발생: " + e.getMessage());
+            originalImage = rotateExifImage(inputStream);
+        } catch (ImageProcessingException | MetadataException e) {
+            log.info(e.getLocalizedMessage());
         }
 
         int originWidth = originalImage.getWidth();
@@ -79,11 +74,7 @@ public class ImageUtil {
         g.dispose();
 
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        try {
-            ImageIO.write(outputImage, "jpg", outputStream);
-        } finally {
-            outputStream.close();
-        }
+        ImageIO.write(outputImage, "jpg", outputStream);
 
         return imageToMultipartFile(outputStream.toByteArray(), filename);
     }
