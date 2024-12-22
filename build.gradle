@@ -24,10 +24,6 @@ repositories {
     maven { url 'https://repo.spring.io/milestone' }
 }
 
-ext {
-    set('springAiVersion', "1.0.0-M1")
-}
-
 dependencies {
     // Spring Starter
     implementation 'org.springframework.boot:spring-boot-starter-web'
@@ -62,20 +58,11 @@ dependencies {
     runtimeOnly 'com.mysql:mysql-connector-j'
     implementation 'org.mariadb.jdbc:mariadb-java-client:3.5.1'
 
-    // Spring AI
-    implementation 'org.springframework.ai:spring-ai-openai-spring-boot-starter'
-
     // AWS S3
     implementation 'io.awspring.cloud:spring-cloud-aws-starter-s3:3.0.1'
 
     // Image
     implementation 'com.drewnoakes:metadata-extractor:2.18.0'
-}
-
-dependencyManagement {
-    imports {
-        mavenBom "org.springframework.ai:spring-ai-bom:${springAiVersion}"
-    }
 }
 
 tasks.named('test') {
