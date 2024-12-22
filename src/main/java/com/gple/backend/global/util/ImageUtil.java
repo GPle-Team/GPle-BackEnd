@@ -7,6 +7,7 @@ import com.drew.metadata.MetadataException;
 import com.drew.metadata.exif.ExifDirectoryBase;
 import com.drew.metadata.exif.ExifIFD0Directory;
 import com.gple.backend.global.file.ImageMultipartFile;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -15,8 +16,10 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 
+@Slf4j
 @Component
 public class ImageUtil {
     public BufferedImage rotateExifImage(MultipartFile file) throws MetadataException, IOException, ImageProcessingException {
@@ -34,11 +37,17 @@ public class ImageUtil {
     }
 
     public MultipartFile resizeMultipartFile(MultipartFile file, String filename) throws IOException {
-        BufferedImage originalImage = ImageIO.read(file.getInputStream());
+
+        BufferedImage originalImage;
+        try (InputStream inputStream = file.getInputStream()){
+            originalImage = ImageIO.read(inputStream);
+        }
 
         try {
             originalImage = rotateExifImage(file);
-        } catch (MetadataException | ImageProcessingException ignored){}
+        } catch (MetadataException | ImageProcessingException e){
+            log.info("EXIF 처리 중 오류 발생: " + e.getMessage());
+        }
 
         int originWidth = originalImage.getWidth();
         int originHeight = originalImage.getHeight();
@@ -70,7 +79,11 @@ public class ImageUtil {
         g.dispose();
 
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        ImageIO.write(outputImage, "jpg", outputStream);
+        try {
+            ImageIO.write(outputImage, "jpg", outputStream);
+        } finally {
+            outputStream.close();
+        }
 
         return imageToMultipartFile(outputStream.toByteArray(), filename);
     }
