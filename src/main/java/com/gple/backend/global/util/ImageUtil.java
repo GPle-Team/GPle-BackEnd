@@ -23,7 +23,7 @@ import java.io.OutputStream;
 @Slf4j
 @Component
 public class ImageUtil {
-    public BufferedImage rotateExifImage(BufferedImage originalImage, Metadata metadata) throws MetadataException, IOException, ImageProcessingException {
+    public BufferedImage rotateExifImage(BufferedImage originalImage, Metadata metadata) throws MetadataException {
         int orientation = getOrientation(metadata);
 
         return switch (orientation) {
@@ -37,8 +37,11 @@ public class ImageUtil {
     public MultipartFile resizeMultipartFile(MultipartFile file, String filename) throws IOException, ImageProcessingException, MetadataException {
         BufferedImage originalImage = ImageIO.read(file.getInputStream());
         Metadata metadata = ImageMetadataReader.readMetadata(file.getInputStream());
+        int orientation = getOrientation(metadata);
 
-        originalImage = rotateExifImage(originalImage, metadata);
+        if(orientation != 1){
+            originalImage = rotateExifImage(originalImage, metadata);
+        }
 
         int originWidth = originalImage.getWidth();
         int originHeight = originalImage.getHeight();
