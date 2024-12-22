@@ -1,15 +1,15 @@
 package com.gple.backend.global.security.jwt;
 
+import com.gple.backend.global.exception.ExceptionEnum;
+import com.gple.backend.global.exception.HttpException;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.security.SignatureException;
 import com.gple.backend.domain.auth.controller.dto.common.response.TokenResponse;
 import com.gple.backend.domain.auth.controller.dto.common.response.TokenSet;
-import com.gple.backend.global.exception.HttpException;
 import com.gple.backend.global.security.dto.TokenType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -95,15 +95,15 @@ public class JwtProvider {
                 .parseSignedClaims(token)
                 .getPayload();
         } catch (ExpiredJwtException e) {
-            throw new HttpException(HttpStatus.UNAUTHORIZED, "만료된 토큰입니다.");
+            throw new HttpException(ExceptionEnum.EXPIRED_JWT);
         } catch (UnsupportedJwtException e) {
-            throw new HttpException(HttpStatus.FORBIDDEN, "형식이 일치하지 않는 토큰입니다.");
+            throw new HttpException(ExceptionEnum.UNSUPPORTED_JWT);
         } catch (MalformedJwtException e) {
-            throw new HttpException(HttpStatus.FORBIDDEN, "올바르지 않은 구성의 토큰입니다.");
+            throw new HttpException(ExceptionEnum.MALFORMED_JWT);
         } catch (SignatureException e) {
-            throw new HttpException(HttpStatus.FORBIDDEN, "서명을 확인할 수 없는 토큰입니다.");
+            throw new HttpException(ExceptionEnum.INVALID_SIGNATURE);
         } catch (RuntimeException e) {
-            throw new HttpException(HttpStatus.FORBIDDEN, "알 수 없는 토큰입니다.");
+            throw new HttpException(ExceptionEnum.UNEXPECTED_EXCEPTION);
         }
     }
 

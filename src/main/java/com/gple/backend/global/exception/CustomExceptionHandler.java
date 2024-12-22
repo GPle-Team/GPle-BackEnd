@@ -18,10 +18,10 @@ public class CustomExceptionHandler {
 	@ExceptionHandler(HttpException.class)
 	ResponseEntity<ExceptionResponse> httpException(HttpException exception) throws JsonProcessingException {
 		ExceptionResponse response = new ExceptionResponse(
-			exception.getStatusCode().value(), exception.getMessage()
+			exception.getStatus().value(), exception.getMessage()
 		);
 
 		log.error("{}", objectMapper.writeValueAsString(response));
-		return ResponseEntity.status(exception.getStatusCode()).body(response);
+		return ResponseEntity.status(exception.getStatus()).body(response);
 	}
 }

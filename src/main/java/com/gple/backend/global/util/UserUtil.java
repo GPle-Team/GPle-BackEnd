@@ -2,6 +2,7 @@ package com.gple.backend.global.util;
 
 import com.gple.backend.domain.user.entity.User;
 import com.gple.backend.domain.user.repository.UserRepository;
+import com.gple.backend.global.exception.ExceptionEnum;
 import com.gple.backend.global.exception.HttpException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -17,6 +18,6 @@ public class UserUtil {
 
     public User getCurrentUser(){
         return userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName())
-            .orElseThrow(() -> new HttpException(HttpStatus.NOT_FOUND, "해당 유저를 찾을 수 없습니다."));
+            .orElseThrow(() -> new HttpException(ExceptionEnum.NOT_FOUND_USER));
     }
 }
