@@ -19,17 +19,16 @@ import com.gple.backend.domain.auth.repository.RefreshTokenRepository;
 import com.gple.backend.domain.user.entity.User;
 import com.gple.backend.domain.user.entity.Role;
 import com.gple.backend.domain.user.repository.UserRepository;
+import com.gple.backend.global.exception.ExceptionEnum;
 import com.gple.backend.global.exception.HttpException;
 import com.gple.backend.global.security.dto.TokenType;
 import com.gple.backend.global.security.jwt.JwtProvider;
 import com.gple.backend.global.util.UserUtil;
-import io.restassured.path.json.mapper.factory.Jackson2ObjectMapperFactory;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.http.converter.json.Jackson2ObjectMapperFactoryBean;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -67,7 +66,7 @@ public class AuthService {
         String id = jwtProvider.getClaims(slicedToken, TokenType.REFRESH_TOKEN).getSubject();
 
         if(!refreshTokenRepository.existsById(id)){
-            throw new HttpException(HttpStatus.UNAUTHORIZED, "리프레시 토큰이 유효하지 않습니다.");
+            throw new HttpException(ExceptionEnum.INVALID_REFRESH_TOKEN);
         }
 
         TokenResponse generatedToken = jwtProvider.generateToken(id, TokenType.ACCESS_TOKEN);
@@ -84,7 +83,7 @@ public class AuthService {
         existOrSaveUser(email);
 
         User user = userRepository.findByEmail(email).orElseThrow(() ->
-            new HttpException(HttpStatus.BAD_REQUEST, "예기치 않은 오류로 유저를 찾을 수 없습니다.")
+            new HttpException(ExceptionEnum.NOT_FOUND_USER)
         );
 
         TokenSet tokenSet = jwtProvider.generateTokenSet(user.getId().toString());
@@ -101,15 +100,21 @@ public class AuthService {
             .setAudience(Collections.singletonList(clientId)) // 클라이언트 ID
             .build();
 
+        GoogleIdToken idToken = null;
+
         try {
-            GoogleIdToken idToken = verifier.verify(idTokenString);
-            String email = idToken.getPayload().getEmail();
+            idToken = verifier.verify(idTokenString);
+        } catch (GeneralSecurityException | IOException e) {
+            throw new HttpException(ExceptionEnum.INVALID_ID_TOKEN);
+        }
+
+        String email = idToken.getPayload().getEmail();
 
             validEmail(email);
             existOrSaveUser(email);
 
             User user = userRepository.findByEmail(email).orElseThrow(() ->
-                new HttpException(HttpStatus.BAD_REQUEST, "예기치 않은 오류로 유저를 찾을 수 없습니다.")
+                new HttpException(ExceptionEnum.NOT_FOUND_USER)
             );
 
             TokenSet tokenSet = jwtProvider.generateTokenSet(user.getId().toString());
@@ -118,9 +123,6 @@ public class AuthService {
             saveRefreshToken(user.getId(), refreshToken.getToken());
 
             return tokenSet.toWebTokenResponse();
-        } catch (GeneralSecurityException | IOException e){
-            throw new HttpException(HttpStatus.UNAUTHORIZED, "");
-        }
     }
 
     @Transactional
@@ -133,7 +135,7 @@ public class AuthService {
             String id = user.getId().toString();
 
             if(tokenId.equals(id)) refreshTokenRepository.deleteById(id);
-            else throw new HttpException(HttpStatus.NOT_FOUND, "토큰과 일치하는 유저를 찾을 수 없습니다.");
+            else throw new HttpException(ExceptionEnum.NOT_FOUND_USER);
         }
     }
 
@@ -142,7 +144,7 @@ public class AuthService {
         Matcher matcher = pattern.matcher(email);
 
         if(!matcher.matches()){
-            throw new HttpException(HttpStatus.BAD_REQUEST, "gsm.hs.kr 도메인만 사용할 수 있습니다.");
+            throw new HttpException(ExceptionEnum.INVALID_FORMAT_EMAIL);
         }
     }
 
@@ -178,7 +180,7 @@ public class AuthService {
             .block();
 
         if(response == null){
-            throw new HttpException(HttpStatus.UNAUTHORIZED, "구글 엑세스 토큰이 유효하지 않습니다.");
+            throw new HttpException(ExceptionEnum.INVALID_GOOGLE_ACCESS_TOKEN);
         }
 
         return response.getBody();
@@ -205,7 +207,7 @@ public class AuthService {
                 redirectUri
             ).execute();
         } catch (IOException e) {
-            throw new HttpException(HttpStatus.BAD_REQUEST, "구글 엑세스 토큰을 받아오던 중 오류가 발생하였습니다.");
+            throw new HttpException(ExceptionEnum.INVALID_GOOGLE_ACCESS_TOKEN);
         }
     }
 }

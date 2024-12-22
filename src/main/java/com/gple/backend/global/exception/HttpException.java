@@ -1,15 +1,20 @@
 package com.gple.backend.global.exception;
 
-import lombok.AllArgsConstructor;
+
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
 
 @Getter
-@AllArgsConstructor
-public class HttpException extends RuntimeException{
-	HttpStatus statusCode;
-	String message;
-	public Throwable fillInStackTrace(){
-		return this;
-	}
+public class HttpException extends RuntimeException {
+    private final HttpStatus status;
+
+    public HttpException(ExceptionEnum exceptionEnum){
+        super(exceptionEnum.getMessage());
+        this.status = exceptionEnum.getStatus();
+    }
+
+    @Override
+    public synchronized Throwable fillInStackTrace() {
+        return this;
+    }
 }

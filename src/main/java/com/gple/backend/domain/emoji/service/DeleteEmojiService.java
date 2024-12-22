@@ -2,7 +2,8 @@ package com.gple.backend.domain.emoji.service;
 
 import com.gple.backend.domain.emoji.entity.Emoji;
 import com.gple.backend.domain.emoji.repository.EmojiRepository;
-import com.gple.backend.global.exception.ExpectedException;
+import com.gple.backend.global.exception.ExceptionEnum;
+import com.gple.backend.global.exception.HttpException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -16,7 +17,7 @@ public class DeleteEmojiService {
     @Transactional
     public void execute(Long emojiId) {
         Emoji emoji = emojiRepository.findById(emojiId)
-                .orElseThrow(() -> new ExpectedException("이모지를 찾을 수 없습니다.", HttpStatus.NOT_FOUND));
+                .orElseThrow(() -> new HttpException(ExceptionEnum.NOT_FOUND_EMOJI));
 
         emojiRepository.delete(emoji);
     }

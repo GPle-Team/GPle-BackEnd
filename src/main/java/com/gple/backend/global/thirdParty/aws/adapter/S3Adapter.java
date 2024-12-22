@@ -1,7 +1,10 @@
 package com.gple.backend.global.thirdParty.aws.adapter;
 
-import com.gple.backend.global.exception.ExpectedException;
+import com.gple.backend.global.exception.ExceptionEnum;
+import com.gple.backend.global.exception.HttpException;
 import com.gple.backend.global.thirdParty.aws.properties.S3Properties;
+import com.gple.backend.global.util.FileUtil;
+import com.gple.backend.global.util.ImageUtil;
 import io.awspring.cloud.s3.ObjectMetadata;
 import io.awspring.cloud.s3.S3Exception;
 import io.awspring.cloud.s3.S3Resource;
@@ -15,25 +18,41 @@ import software.amazon.awssdk.awscore.exception.AwsServiceException;
 import software.amazon.awssdk.core.exception.SdkClientException;
 
 import java.io.IOException;
-import java.util.List;
-import java.util.Objects;
-import java.util.UUID;
 
 @Component
 @RequiredArgsConstructor
 public class S3Adapter {
     private final S3Template s3Template;
     private final S3Properties properties;
+    private final FileUtil fileUtil;
+    private final ImageUtil imageUtil;
 
     public String uploadImage(MultipartFile multipartFile) {
+        String originalFilename = multipartFile.getOriginalFilename();
+        assert originalFilename != null;
+
+        String extension = fileUtil.getFileExtension(originalFilename);
+        fileUtil.validateImageExtension(extension);
+
+        String filename = fileUtil.generateFileName(extension);
+
+        try {
+            multipartFile = imageUtil.resizeMultipartFile(multipartFile, filename);
+        } catch (IOException e) {
+            throw new HttpException(ExceptionEnum.UNEXPECTED_IMAGE_CONVERT);
+        }
+
+        return this.uploadFile(multipartFile);
+    }
+
+    public String uploadFile(MultipartFile multipartFile) {
         if (multipartFile.isEmpty()) {
-            throw new ExpectedException("파일이 존재하지 않습니다.", HttpStatus.NOT_FOUND);
+            throw new HttpException(ExceptionEnum.NOT_FOUND_FILE);
         }
 
         String originalFileName = multipartFile.getOriginalFilename();
         String fileExtension = StringUtils.getFilenameExtension(originalFileName);
-        validateFileExtensionType(Objects.requireNonNull(fileExtension));
-        String fileName = generateFileName(fileExtension);
+        String fileName = fileUtil.generateFileName(fileExtension);
 
         try {
             S3Resource s3Resource = s3Template.upload(
@@ -45,24 +64,13 @@ public class S3Adapter {
 
             return s3Resource.getURL().toString();
         } catch (IOException e) {
-            throw new RuntimeException("입출력 작업중에 예외 발생", e);
+            throw new HttpException(ExceptionEnum.INVALID_INPUT_OUTPUT);
         } catch (S3Exception e) {
-            throw new RuntimeException("S3에서 예외 발생", e);
+            throw new HttpException(ExceptionEnum.INVALID_AWS_S3);
         } catch (AwsServiceException e) {
-            throw new RuntimeException("AWS에서 예외 발생", e);
+            throw new HttpException(ExceptionEnum.INVALID_AWS);
         } catch (SdkClientException e) {
-            throw new RuntimeException("클라이언측 문제로 인한 예외 발생", e);
-        }
-    }
-
-    private String generateFileName(String fileExtension) {
-        return UUID.randomUUID() + "." + fileExtension;
-    }
-
-    private void validateFileExtensionType(String fileExtention) {
-        List<String> allowExtensions = List.of("jpg", "jpeg", "png");
-        if (!allowExtensions.contains(fileExtention.toLowerCase())) {
-            throw new ExpectedException("지원하지 않는 파일 확장자입니다.", HttpStatus.BAD_REQUEST);
+            throw new HttpException(ExceptionEnum.INVALID_AWS_SDK_CLIENT);
         }
     }
 }
