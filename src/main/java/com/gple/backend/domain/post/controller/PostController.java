@@ -31,7 +31,7 @@ public class PostController {
     @PostMapping
     public ResponseEntity<Void> post(@RequestBody @Valid CreatePostRequest reqDto) {
         createPostService.execute(reqDto);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok().build();
     }
 
     @GetMapping("/{postId}")
