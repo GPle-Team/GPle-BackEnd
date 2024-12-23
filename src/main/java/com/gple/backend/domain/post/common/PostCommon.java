@@ -1,5 +1,6 @@
 package com.gple.backend.domain.post.common;
 
+import com.gple.backend.domain.emoji.controller.dto.response.CheckEmojiResponse;
 import com.gple.backend.domain.emoji.controller.dto.response.EmojiResponse;
 import com.gple.backend.domain.emoji.entity.Emoji;
 import com.gple.backend.domain.emoji.entity.EmojiType;
@@ -16,11 +17,15 @@ public class PostCommon {
         return countEmojis.stream().filter(emoji -> emoji.getEmojiType() == emojiType).count();
     }
 
-    public static List<QueryPostResponse> postListToDto(List<Post> posts){
-        return posts.stream().map(PostCommon::postToDto).toList();
+    public static boolean getMyReactedEmoji(List<Emoji> isClickedEmojis, EmojiType emojiType, Long id){
+        return isClickedEmojis.stream().anyMatch((emoji -> emoji.getUser().getId().equals(id) && emoji.getEmojiType() == emojiType));
     }
 
-    public static QueryPostResponse postToDto(Post post){
+    public static List<QueryPostResponse> postListToDto(List<Post> posts, Long userId){
+        return posts.stream().map(post -> postToDto(post, userId)).toList();
+    }
+
+    public static QueryPostResponse postToDto(Post post, Long userId){
         List<Tag> tags = post.getTag();
         List<TagResponse> tagDtoList = tags.stream().map(tag -> TagResponse.builder()
             .id(tag.getUser().getId())
@@ -38,6 +43,15 @@ public class PostCommon {
             .congCount(getEmojiCount(emojis, EmojiType.CONGRATULATION))
             .build();
 
+        CheckEmojiResponse checkEmoji = CheckEmojiResponse.builder()
+            .isHeart(getMyReactedEmoji(emojis, EmojiType.HEART, userId))
+            .isThumbs(getMyReactedEmoji(emojis, EmojiType.THUMBSUP, userId))
+            .isThink(getMyReactedEmoji(emojis, EmojiType.THINKING, userId))
+            .isPoop(getMyReactedEmoji(emojis, EmojiType.POOP, userId))
+            .isCong(getMyReactedEmoji(emojis, EmojiType.CONGRATULATION, userId))
+            .isChina(getMyReactedEmoji(emojis, EmojiType.CHINA, userId))
+            .build();
+
         return QueryPostResponse.builder()
             .author(AuthorResponse.builder()
                 .grade(post.getUser().getGrade())
@@ -45,6 +59,7 @@ public class PostCommon {
                 .id(post.getUser().getId())
                 .build()
             )
+            .checkEmoji(checkEmoji)
             .id(post.getId())
             .title(post.getTitle())
             .location(post.getLocation().getName())

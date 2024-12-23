@@ -1,5 +1,7 @@
 package com.gple.backend.global.thirdParty.aws.adapter;
 
+import com.drew.imaging.ImageProcessingException;
+import com.drew.metadata.MetadataException;
 import com.gple.backend.global.exception.ExceptionEnum;
 import com.gple.backend.global.exception.HttpException;
 import com.gple.backend.global.thirdParty.aws.properties.S3Properties;
@@ -10,6 +12,7 @@ import io.awspring.cloud.s3.S3Exception;
 import io.awspring.cloud.s3.S3Resource;
 import io.awspring.cloud.s3.S3Template;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
@@ -19,6 +22,7 @@ import software.amazon.awssdk.core.exception.SdkClientException;
 
 import java.io.IOException;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class S3Adapter {
@@ -40,6 +44,8 @@ public class S3Adapter {
             multipartFile = imageUtil.resizeMultipartFile(multipartFile, filename);
         } catch (IOException e) {
             throw new HttpException(ExceptionEnum.UNEXPECTED_IMAGE_CONVERT);
+        } catch (ImageProcessingException | MetadataException e) {
+            log.info(e.getLocalizedMessage());
         }
 
         return this.uploadFile(multipartFile);

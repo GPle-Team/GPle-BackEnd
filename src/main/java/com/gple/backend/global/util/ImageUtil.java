@@ -7,6 +7,7 @@ import com.drew.metadata.MetadataException;
 import com.drew.metadata.exif.ExifDirectoryBase;
 import com.drew.metadata.exif.ExifIFD0Directory;
 import com.gple.backend.global.file.ImageMultipartFile;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -15,15 +16,12 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
 
+@Slf4j
 @Component
 public class ImageUtil {
-    public BufferedImage rotateExifImage(MultipartFile file) throws MetadataException, IOException, ImageProcessingException {
-        Metadata metadata = ImageMetadataReader.readMetadata(file.getInputStream());
-
+    public BufferedImage rotateExifImage(BufferedImage originalImage, Metadata metadata) throws MetadataException {
         int orientation = getOrientation(metadata);
-        BufferedImage originalImage = ImageIO.read(file.getInputStream());
 
         return switch (orientation) {
             case 3 -> rotate(originalImage, 180);
@@ -33,12 +31,10 @@ public class ImageUtil {
         };
     }
 
-    public MultipartFile resizeMultipartFile(MultipartFile file, String filename) throws IOException {
+    public MultipartFile resizeMultipartFile(MultipartFile file, String filename) throws IOException, ImageProcessingException, MetadataException {
+        Metadata metadata = ImageMetadataReader.readMetadata(file.getInputStream());
         BufferedImage originalImage = ImageIO.read(file.getInputStream());
-
-        try {
-            originalImage = rotateExifImage(file);
-        } catch (MetadataException | ImageProcessingException ignored){}
+        originalImage = rotateExifImage(originalImage, metadata);
 
         int originWidth = originalImage.getWidth();
         int originHeight = originalImage.getHeight();
@@ -52,6 +48,9 @@ public class ImageUtil {
             newWidth = (originWidth * 390) / originHeight;
         }
 
+        int x = (390 - newWidth) / 2;
+        int y = (390 - newHeight) / 2;
+
         Image tmpImage = originalImage.getScaledInstance(newWidth, newHeight, Image.SCALE_SMOOTH);
         BufferedImage resizedImage = new BufferedImage(newWidth, newHeight, BufferedImage.TYPE_INT_RGB);
 
@@ -63,9 +62,6 @@ public class ImageUtil {
         Graphics2D g = outputImage.createGraphics();
         g.setColor(new Color(0x263034));
         g.fillRect(0, 0, 390, 390);
-
-        int x = (390 - newWidth) / 2;
-        int y = (390 - newHeight) / 2;
         g.drawImage(resizedImage, x, y, null);
         g.dispose();
 
@@ -91,6 +87,7 @@ public class ImageUtil {
         BufferedImage rotatedImage = new BufferedImage(width, height, image.getType());
         Graphics2D g2d = rotatedImage.createGraphics();
 
+        g2d.setBackground(new Color(0x263034));
         g2d.rotate(Math.toRadians(angle), (double) width / 2, (double) height / 2);
         g2d.drawImage(image, null, 0, 0);
         g2d.dispose();
