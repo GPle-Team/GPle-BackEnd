@@ -37,6 +37,7 @@ public enum ExceptionEnum {
 
     // GCP
     INVALID_ID_TOKEN("ID 토큰을 받아오는데 실패하였습니다.", HttpStatus.BAD_REQUEST),
+    INVALID_GOOGLE_CLIENT_ID("클라이언트 ID가 유효하지 않습니다.", HttpStatus.BAD_REQUEST),
     INVALID_GOOGLE_ACCESS_TOKEN("유효하지 않은 구글 엑세스 토큰입니다.", HttpStatus.BAD_REQUEST),
 
     UNEXPECTED_EXCEPTION("예상치 못한 오류가 발생하였습니다.", HttpStatus.NOT_FOUND);
