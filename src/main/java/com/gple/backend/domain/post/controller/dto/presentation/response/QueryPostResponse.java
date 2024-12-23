@@ -1,5 +1,6 @@
 package com.gple.backend.domain.post.controller.dto.presentation.response;
 
+import com.gple.backend.domain.emoji.controller.dto.response.CheckEmojiResponse;
 import com.gple.backend.domain.emoji.controller.dto.response.EmojiResponse;
 import com.gple.backend.domain.post.controller.dto.common.AuthorResponse;
 import com.gple.backend.domain.post.entity.Location;
@@ -30,6 +31,8 @@ public class QueryPostResponse {
     private AuthorResponse author;
 
     private EmojiResponse emojiList;
+
+    private CheckEmojiResponse checkEmoji;
 
     private LocalDateTime createdTime;
 }

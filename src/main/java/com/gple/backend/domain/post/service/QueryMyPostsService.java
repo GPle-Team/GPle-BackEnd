@@ -24,6 +24,6 @@ public class QueryMyPostsService {
         User user = userUtil.getCurrentUser();
         List<Post> posts = postRepository.findByUserId(user.getId());
 
-        return postListToDto(posts);
+        return postListToDto(posts, user.getId());
     }
 }

@@ -7,6 +7,7 @@ import com.gple.backend.domain.post.entity.Location;
 import com.gple.backend.domain.post.service.*;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
+@Slf4j
 @RequestMapping("/post")
 @RequiredArgsConstructor
 public class PostController {
@@ -29,7 +31,7 @@ public class PostController {
     @PostMapping
     public ResponseEntity<Void> post(@RequestBody @Valid CreatePostRequest reqDto) {
         createPostService.execute(reqDto);
-        return ResponseEntity.status(HttpStatus.CREATED).build();
+        return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/{postId}")

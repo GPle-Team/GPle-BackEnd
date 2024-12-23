@@ -30,6 +30,6 @@ public class QueryReactedPostsService {
             .distinct()
             .toList();
 
-        return postListToDto(reactedPosts);
+        return postListToDto(reactedPosts, user.getId());
     }
 }
