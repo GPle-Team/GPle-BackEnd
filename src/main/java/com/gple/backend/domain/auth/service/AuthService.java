@@ -3,6 +3,7 @@ package com.gple.backend.domain.auth.service;
 import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeTokenRequest;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
+import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.gson.GsonFactory;
 import com.gple.backend.domain.auth.controller.dto.common.response.TokenSet;
@@ -13,7 +14,7 @@ import com.gple.backend.domain.auth.controller.dto.common.response.GoogleOAuthTo
 import com.gple.backend.domain.auth.controller.dto.common.response.GoogleUserInfo;
 import com.gple.backend.domain.auth.controller.dto.common.response.TokenResponse;
 import com.gple.backend.domain.auth.controller.dto.web.response.RefreshTokenResponse;
-import com.gple.backend.domain.auth.controller.dto.web.response.WebTokenResponse;
+import com.gple.backend.domain.auth.controller.dto.web.response.LoginResponse;
 import com.gple.backend.domain.auth.entity.RefreshToken;
 import com.gple.backend.domain.auth.repository.RefreshTokenRepository;
 import com.gple.backend.domain.user.entity.User;
@@ -73,7 +74,7 @@ public class AuthService {
     }
 
     @Transactional
-    public WebTokenResponse googleLogin(String code){
+    public LoginResponse googleLogin(String code){
         GoogleOAuthToken googleOAuthToken = getGoogleTokens(code);
         GoogleUserInfo userInfo = getGoogleUserInfo(googleOAuthToken.getAccess_token());
         String email = userInfo.getEmail();
@@ -94,34 +95,38 @@ public class AuthService {
     }
 
     @Transactional
-    public WebTokenResponse googleLoginByIdToken(String idTokenString) {
-        GoogleIdTokenVerifier verifier = new GoogleIdTokenVerifier.Builder(new NetHttpTransport(), new GsonFactory())
-            .setAudience(Collections.singletonList(clientId)) // 클라이언트 ID
-            .build();
-
-        GoogleIdToken idToken = null;
-
+    public LoginResponse loginByIdToken(String idTokenString) {
+        GoogleIdTokenVerifier verifier;
         try {
-            idToken = verifier.verify(idTokenString);
+            verifier = new GoogleIdTokenVerifier.Builder(GoogleNetHttpTransport.newTrustedTransport(), new GsonFactory())
+                .setAudience(List.of(clientId))
+                .build();
+        } catch (IOException | GeneralSecurityException e){
+            throw new HttpException(ExceptionEnum.INVALID_GOOGLE_CLIENT_ID);
+        }
+
+        GoogleIdToken verifiedIdToken;
+        try {
+            verifiedIdToken = verifier.verify(idTokenString);
         } catch (GeneralSecurityException | IOException e) {
             throw new HttpException(ExceptionEnum.INVALID_ID_TOKEN);
         }
 
-        String email = idToken.getPayload().getEmail();
+        String email = verifiedIdToken.getPayload().getEmail();
 
-            validEmail(email);
-            existOrSaveUser(email);
+        validEmail(email);
+        existOrSaveUser(email);
 
-            User user = userRepository.findByEmail(email).orElseThrow(() ->
-                new HttpException(ExceptionEnum.NOT_FOUND_USER)
-            );
+        User user = userRepository.findByEmail(email).orElseThrow(() ->
+            new HttpException(ExceptionEnum.NOT_FOUND_USER)
+        );
 
-            TokenSet tokenSet = jwtProvider.generateTokenSet(user.getId().toString());
-            TokenResponse refreshToken = tokenSet.getRefreshToken();
+        TokenSet tokenSet = jwtProvider.generateTokenSet(user.getId().toString());
+        TokenResponse refreshToken = tokenSet.getRefreshToken();
 
-            saveRefreshToken(user.getId(), refreshToken.getToken());
+        saveRefreshToken(user.getId(), refreshToken.getToken());
 
-            return tokenSet.toWebTokenResponse();
+        return tokenSet.toWebTokenResponse();
     }
 
     @Transactional

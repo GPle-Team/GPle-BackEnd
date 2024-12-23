@@ -1,6 +1,6 @@
 package com.gple.backend.domain.auth.controller.dto.common.response;
 
-import com.gple.backend.domain.auth.controller.dto.web.response.WebTokenResponse;
+import com.gple.backend.domain.auth.controller.dto.web.response.LoginResponse;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -12,8 +12,8 @@ public class TokenSet {
     private TokenResponse accessToken;
     private TokenResponse refreshToken;
 
-    public WebTokenResponse toWebTokenResponse(){
-        return WebTokenResponse.builder()
+    public LoginResponse toWebTokenResponse(){
+        return LoginResponse.builder()
             .accessToken(accessToken.getToken())
             .accessExpiredAt(accessToken.getExpires())
             .refreshToken(refreshToken.getToken())
