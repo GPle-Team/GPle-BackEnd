@@ -8,7 +8,6 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public enum Location {
     GYM("금봉관"),
-    TRAINING_CENTER("체력단련실"),
     PLAYGROUND("운동장"),
     DOMITORY("동행관"),
     HOME("본관"),
