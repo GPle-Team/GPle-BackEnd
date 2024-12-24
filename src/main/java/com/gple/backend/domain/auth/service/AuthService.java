@@ -96,20 +96,26 @@ public class AuthService {
 
     @Transactional
     public LoginResponse loginByIdToken(String idTokenString) {
-        GoogleIdTokenVerifier verifier;
+        NetHttpTransport httpTransport;
         try {
-            verifier = new GoogleIdTokenVerifier.Builder(GoogleNetHttpTransport.newTrustedTransport(), new GsonFactory())
-                .setAudience(List.of(clientId))
-                .build();
-        } catch (IOException | GeneralSecurityException e){
-            throw new HttpException(ExceptionEnum.INVALID_GOOGLE_CLIENT_ID);
+            httpTransport = GoogleNetHttpTransport.newTrustedTransport();
+        } catch (GeneralSecurityException | IOException e) {
+            throw new HttpException(ExceptionEnum.INVALID_INPUT_OUTPUT);
         }
+
+        GoogleIdTokenVerifier verifier = new GoogleIdTokenVerifier.Builder(httpTransport, new GsonFactory())
+            .setAudience(List.of(clientId))
+            .build();
 
         GoogleIdToken verifiedIdToken;
         try {
             verifiedIdToken = verifier.verify(idTokenString);
         } catch (GeneralSecurityException | IOException e) {
             throw new HttpException(ExceptionEnum.INVALID_ID_TOKEN);
+        }
+
+        if(verifiedIdToken == null){
+            throw new HttpException(ExceptionEnum.INVALID_GOOGLE_CLIENT_ID);
         }
 
         String email = verifiedIdToken.getPayload().getEmail();

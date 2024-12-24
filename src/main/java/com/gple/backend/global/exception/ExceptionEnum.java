@@ -30,7 +30,7 @@ public enum ExceptionEnum {
     INVALID_FILE_FORMAT("해당 파일 확장자를 지원하지 않습니다.", HttpStatus.BAD_REQUEST),
 
     // AWS
-    INVALID_INPUT_OUTPUT("파일을 업로드하는 중에 오류가 발생하였습니다.", HttpStatus.INTERNAL_SERVER_ERROR),
+    INVALID_INPUT_OUTPUT("입출력 오류가 발생하였습니다.", HttpStatus.INTERNAL_SERVER_ERROR),
     INVALID_AWS_S3("AWS S3에서 오류가 발생하였습니다.", HttpStatus.INTERNAL_SERVER_ERROR),
     INVALID_AWS("AWS에서 오류가 발생하였습니다.", HttpStatus.INTERNAL_SERVER_ERROR),
     INVALID_AWS_SDK_CLIENT("AWS SDK에서 오류가 발생하였습니다.", HttpStatus.INTERNAL_SERVER_ERROR),

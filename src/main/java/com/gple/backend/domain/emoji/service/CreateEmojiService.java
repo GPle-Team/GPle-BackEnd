@@ -27,6 +27,8 @@ public class CreateEmojiService {
         Post post = postRepository.findById(reqDto.getPostId())
                 .orElseThrow(() -> new HttpException(ExceptionEnum.NOT_FOUND_POST));
 
+
+
         Emoji emoji = Emoji.builder()
                 .id(0L)
                 .post(post)
