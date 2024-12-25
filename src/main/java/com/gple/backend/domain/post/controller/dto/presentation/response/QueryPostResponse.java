@@ -32,7 +32,7 @@ public class QueryPostResponse {
 
     private EmojiResponse emojiList;
 
-    private CheckEmojiResponse checkEmoji;
+    private List<Boolean> checkEmoji;
 
     private LocalDateTime createdTime;
 }

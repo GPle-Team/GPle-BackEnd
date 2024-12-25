@@ -43,14 +43,14 @@ public class PostCommon {
             .congCount(getEmojiCount(emojis, EmojiType.CONGRATULATION))
             .build();
 
-        CheckEmojiResponse checkEmoji = CheckEmojiResponse.builder()
-            .isHeart(getMyReactedEmoji(emojis, EmojiType.HEART, userId))
-            .isThumbs(getMyReactedEmoji(emojis, EmojiType.THUMBSUP, userId))
-            .isThink(getMyReactedEmoji(emojis, EmojiType.THINKING, userId))
-            .isPoop(getMyReactedEmoji(emojis, EmojiType.POOP, userId))
-            .isCong(getMyReactedEmoji(emojis, EmojiType.CONGRATULATION, userId))
-            .isChina(getMyReactedEmoji(emojis, EmojiType.CHINA, userId))
-            .build();
+        List<Boolean> checkEmoji = List.of(
+            getMyReactedEmoji(emojis, EmojiType.HEART, userId),
+            getMyReactedEmoji(emojis, EmojiType.THUMBSUP, userId),
+            getMyReactedEmoji(emojis, EmojiType.THINKING, userId),
+            getMyReactedEmoji(emojis, EmojiType.POOP, userId),
+            getMyReactedEmoji(emojis, EmojiType.CONGRATULATION, userId),
+            getMyReactedEmoji(emojis, EmojiType.CHINA, userId)
+        );
 
         return QueryPostResponse.builder()
             .author(AuthorResponse.builder()
