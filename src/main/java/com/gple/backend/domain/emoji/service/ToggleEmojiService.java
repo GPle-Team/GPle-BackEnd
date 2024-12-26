@@ -13,6 +13,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
+
 @Service
 @RequiredArgsConstructor
 public class ToggleEmojiService {
@@ -21,21 +23,27 @@ public class ToggleEmojiService {
     private final UserUtil userUtil;
 
     @Transactional
-    public void execute(EmojiRequest reqDto) {
+    public void execute(EmojiRequest emojiRequest) {
         User user = userUtil.getCurrentUser();
-        Post post = postRepository.findById(reqDto.getPostId())
+        Post post = postRepository.findById(emojiRequest.getPostId())
                 .orElseThrow(() -> new HttpException(ExceptionEnum.NOT_FOUND_POST));
 
-        if(emojiRepository.existsByUserAndPost(user, post)){
-            emojiRepository.deleteByEmojiTypeAndPostIdAndUserId(reqDto.getEmojiType(), post.getId(), user.getId());
+        Optional<Emoji> emoji = emojiRepository.findEmojiByUserIdAndEmojiTypeAndPostId(
+            user.getId(),
+            emojiRequest.getEmojiType(),
+            post.getId()
+        );
+
+        if(emoji.isPresent()){
+            emojiRepository.deleteById(emoji.get().getId());
         } else {
-            Emoji emoji = Emoji.builder()
+            Emoji createdEmoji = Emoji.builder()
                 .id(0L)
                 .post(post)
-                .emojiType(reqDto.getEmojiType())
+                .emojiType(emojiRequest.getEmojiType())
                 .user(user)
                 .build();
-            emojiRepository.save(emoji);
+            emojiRepository.save(createdEmoji);
         }
     }
 }

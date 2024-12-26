@@ -2,7 +2,7 @@ package com.gple.backend.global.exception;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.gple.backend.global.security.dto.ExceptionResponse;
+import com.gple.backend.global.security.dto.CustomExceptionResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -16,12 +16,14 @@ public class CustomExceptionHandler {
 	private final ObjectMapper objectMapper;
 
 	@ExceptionHandler(RuntimeException.class)
-	ResponseEntity<ExceptionResponse> httpException(RuntimeException exception) throws JsonProcessingException {
-		ExceptionResponse response = new ExceptionResponse(exception.getMessage());
+	ResponseEntity<CustomExceptionResponse> httpException(RuntimeException exception) throws JsonProcessingException {
+		CustomExceptionResponse response = CustomExceptionResponse.builder()
+			.message(exception.getMessage())
+			.build();
+
 		if(exception instanceof HttpException httpException){
-			response = new ExceptionResponse(
-				httpException.getStatus().value(), exception.getMessage()
-			);
+			response.setStatus(httpException.getStatus().value());
+			response.setMessage(httpException.getMessage());
 		}
 
 		if(response.getStatus() == null) response.setStatus(500);

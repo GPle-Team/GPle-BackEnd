@@ -22,7 +22,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class SecurityConfig {
     private final JwtFilter jwtFilter;
-    private final JwtExceptionFilter jwtExceptionFilter;
+    private final LoggingFilter loggingFilter;
     private final ObjectMapper objectMapper;
 
     @Bean
@@ -44,7 +44,7 @@ public class SecurityConfig {
                 sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             )
             .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
-            .addFilterBefore(jwtExceptionFilter, JwtFilter.class)
+            .addFilterBefore(loggingFilter, JwtFilter.class)
             .exceptionHandling(handlingConfigurer ->
                 handlingConfigurer.accessDeniedHandler(new CustomAccessDeniedHandler(objectMapper))
             );
