@@ -1,14 +1,17 @@
 package com.gple.backend.domain.post.controller;
 
+import com.gple.backend.domain.post.controller.dto.common.PostSortType;
+import com.gple.backend.domain.post.controller.dto.common.PostType;
 import com.gple.backend.domain.post.controller.dto.presentation.request.CreatePostRequest;
-import com.gple.backend.domain.post.controller.dto.presentation.request.QueryPostsByLocationRequest;
 import com.gple.backend.domain.post.controller.dto.presentation.response.QueryPostResponse;
 import com.gple.backend.domain.post.entity.Location;
-import com.gple.backend.domain.post.service.*;
+import com.gple.backend.domain.post.service.CreatePostService;
+import com.gple.backend.domain.post.service.DeletePostService;
+import com.gple.backend.domain.post.service.QueryPostByIdService;
+import com.gple.backend.domain.post.service.QueryPostsService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -24,9 +27,6 @@ public class PostController {
     private final DeletePostService deletePostService;
     private final QueryPostByIdService queryPostByIdService;
     private final QueryPostsService queryPostsService;
-    private final QueryMyPostsService queryMyPostsService;
-    private final QueryReactedPostsService queryReactedPostsService;
-    private final QueryPostsByLocationService queryPostsByLocationService;
 
     @PostMapping
     public ResponseEntity<Void> post(@RequestBody @Valid CreatePostRequest reqDto) {
@@ -41,32 +41,18 @@ public class PostController {
     }
 
     @GetMapping
-    public ResponseEntity<List<QueryPostResponse>> queryAllPost() {
-        List<QueryPostResponse> posts = queryPostsService.execute();
+    public ResponseEntity<List<QueryPostResponse>> queryAllPost(
+        @RequestParam(required = false) PostSortType sort,
+        @RequestParam(required = false) PostType type,
+        @RequestParam(required = false) Location location
+    ) {
+        List<QueryPostResponse> posts = queryPostsService.execute(sort, type, location);
         return ResponseEntity.ok(posts);
-    }
-
-    @GetMapping("location")
-    public ResponseEntity<List<QueryPostResponse>> getPostsByLocation(
-        @RequestParam("type") Location location
-    ){
-           List<QueryPostResponse> posts = queryPostsByLocationService.execute(location);
-           return ResponseEntity.ok(posts);
     }
 
     @DeleteMapping("/{postId}")
     public ResponseEntity<Void> deletePost(@PathVariable Long postId) {
         deletePostService.execute(postId);
         return ResponseEntity.noContent().build();
-    }
-
-    @GetMapping("my")
-    public ResponseEntity<List<QueryPostResponse>> getMyPost(){
-        return ResponseEntity.ok(queryMyPostsService.execute());
-    }
-
-    @GetMapping("react")
-    public ResponseEntity<List<QueryPostResponse>> queryAllReactedPosts(){
-        return ResponseEntity.ok(queryReactedPostsService.execute());
     }
 }

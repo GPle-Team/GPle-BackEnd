@@ -13,7 +13,7 @@ import java.util.Optional;
 public interface EmojiRepository extends JpaRepository<Emoji, Long> {
     Optional<Emoji> findEmojiByUserIdAndEmojiTypeAndPostId(Long userId, EmojiType emojiType, Long postId);
 
-    List<Emoji> findByUserId(Long userId);
+    List<Emoji> findByUser(User user);
 
     boolean existsByUserAndPost(User user, Post post);
 
