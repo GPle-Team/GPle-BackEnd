@@ -3,7 +3,7 @@ package com.gple.backend.global.security.handler;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import com.gple.backend.global.security.dto.ExceptionResponse;
+import com.gple.backend.global.security.dto.CustomExceptionResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -24,7 +24,7 @@ public class CustomAccessDeniedHandler implements AccessDeniedHandler {
         HttpStatus forbidden = HttpStatus.FORBIDDEN;
 
         String responseString = objectMapper.writeValueAsString(
-            new ExceptionResponse(forbidden.value(), "해당 엔드포인트에 대한 권한이 없습니다.")
+            new CustomExceptionResponse(forbidden.value(), "해당 엔드포인트에 대한 권한이 없습니다.")
         );
 
         log.error("{}", responseString);

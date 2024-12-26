@@ -1,19 +1,16 @@
 package com.gple.backend.global.security.dto;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 @Getter
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ExceptionResponse {
-	@Setter
-	Integer status;
-	String message;
-
-	public ExceptionResponse(String message){
-		this.message = message;
-	}
+public class RequestResponse {
+    private String uri;
+    private String method;
+    private String authorization;
 }

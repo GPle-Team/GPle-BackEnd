@@ -13,9 +13,11 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(uniqueConstraints = @UniqueConstraint(
-    columnNames = { "user_id", "post_id", "emoji_type" }
-))
+@Table(
+    uniqueConstraints = @UniqueConstraint(
+        columnNames = { "user_id", "post_id", "emoji_type" }
+    )
+)
 public class Emoji {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
