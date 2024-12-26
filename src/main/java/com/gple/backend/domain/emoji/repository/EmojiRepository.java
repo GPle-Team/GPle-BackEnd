@@ -8,7 +8,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
 public interface EmojiRepository extends JpaRepository<Emoji, Long> {
-    Emoji findEmojiByEmojiTypeAndPostId(EmojiType emojiType, Long postId);
+    Emoji findEmojiByUserIdAndEmojiTypeAndPostId(Long userId, EmojiType emojiType, Long postId);
 
     List<Emoji> findByUserId(Long userId);
 }
