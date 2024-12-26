@@ -15,10 +15,12 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class DeleteEmojiService {
     private final EmojiRepository emojiRepository;
+    private final UserUtil userUtil;
 
     @Transactional
     public void execute(EmojiRequest req) {
-        Emoji emoji = emojiRepository.findEmojiByEmojiTypeAndPostId(req.getEmojiType(), req.getPostId())
+        User user = userUtil.getCurrentUser();
+        Emoji emoji = emojiRepository.findEmojiByUserAndEmojiTypeAndPostId(user, req.getEmojiType(), req.getPostId())
                 .orElseThrow(() -> new HttpException(ExceptionEnum.NOT_FOUND_EMOJI));
 
         emojiRepository.delete(emoji);
