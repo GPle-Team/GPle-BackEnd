@@ -1,5 +1,6 @@
 package com.gple.backend.domain.emoji.controller;
 
+import com.gple.backend.domain.emoji.controller.dto.request.EmojiDeleteRequest;
 import com.gple.backend.domain.emoji.controller.dto.request.EmojiRequest;
 import com.gple.backend.domain.emoji.service.DeleteEmojiService;
 import com.gple.backend.domain.emoji.service.CreateEmojiService;
@@ -23,7 +24,7 @@ public class EmojiController {
     }
 
     @DeleteMapping
-    public ResponseEntity<Void> deleteEmoji(@RequestBody @Valid EmojiRequest reqDto) {
+    public ResponseEntity<Void> deleteEmoji(@RequestBody @Valid EmojiDeleteRequest reqDto) {
         deleteEmojiService.execute(reqDto);
         return ResponseEntity.noContent().build();
     }
