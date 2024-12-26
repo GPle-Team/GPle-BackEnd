@@ -15,13 +15,18 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 public class CustomExceptionHandler {
 	private final ObjectMapper objectMapper;
 
-	@ExceptionHandler(HttpException.class)
-	ResponseEntity<ExceptionResponse> httpException(HttpException exception) throws JsonProcessingException {
-		ExceptionResponse response = new ExceptionResponse(
-			exception.getStatus().value(), exception.getMessage()
-		);
+	@ExceptionHandler(RuntimeException.class)
+	ResponseEntity<ExceptionResponse> httpException(RuntimeException exception) throws JsonProcessingException {
+		ExceptionResponse response = new ExceptionResponse(exception.getMessage());
+		if(exception instanceof HttpException httpException){
+			response = new ExceptionResponse(
+				httpException.getStatus().value(), exception.getMessage()
+			);
+		}
+
+		if(response.getStatus() == null) response.setStatus(500);
 
 		log.error("{}", objectMapper.writeValueAsString(response));
-		return ResponseEntity.status(exception.getStatus()).body(response);
+		return ResponseEntity.status(response.getStatus()).body(response);
 	}
 }
