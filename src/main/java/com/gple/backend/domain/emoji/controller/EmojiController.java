@@ -22,9 +22,9 @@ public class EmojiController {
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
-    @DeleteMapping("/{emojiId}")
-    public ResponseEntity<Void> deleteEmoji(@PathVariable Long emojiId) {
-        deleteEmojiService.execute(emojiId);
+    @DeleteMapping
+    public ResponseEntity<Void> deleteEmoji(@RequestBody @Valid EmojiRequest reqDto) {
+        deleteEmojiService.execute(reqDto);
         return ResponseEntity.noContent().build();
     }
 }
