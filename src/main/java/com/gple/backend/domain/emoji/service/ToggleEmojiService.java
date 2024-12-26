@@ -10,13 +10,12 @@ import com.gple.backend.global.exception.ExceptionEnum;
 import com.gple.backend.global.exception.HttpException;
 import com.gple.backend.global.util.UserUtil;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
-public class CreateEmojiService {
+public class ToggleEmojiService {
     private final EmojiRepository emojiRepository;
     private final PostRepository postRepository;
     private final UserUtil userUtil;
@@ -27,15 +26,16 @@ public class CreateEmojiService {
         Post post = postRepository.findById(reqDto.getPostId())
                 .orElseThrow(() -> new HttpException(ExceptionEnum.NOT_FOUND_POST));
 
-
-
-        Emoji emoji = Emoji.builder()
+        if(emojiRepository.existsByUserAndPost(user, post)){
+            emojiRepository.deleteByEmojiTypeAndPostIdAndUserId(reqDto.getEmojiType(), post.getId(), user.getId());
+        } else {
+            Emoji emoji = Emoji.builder()
                 .id(0L)
                 .post(post)
                 .emojiType(reqDto.getEmojiType())
                 .user(user)
                 .build();
-
-        emojiRepository.save(emoji);
+            emojiRepository.save(emoji);
+        }
     }
 }

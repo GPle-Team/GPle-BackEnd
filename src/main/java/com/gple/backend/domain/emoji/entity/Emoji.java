@@ -8,18 +8,21 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-@Entity
 @Getter
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@Entity
+@Table(uniqueConstraints = @UniqueConstraint(
+    columnNames = { "user_id", "post_id", "emoji_type" }
+))
 public class Emoji {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne
-    @JoinColumn
+    @JoinColumn(name = "user_id")
     private User user;
 
     @ManyToOne
@@ -27,5 +30,6 @@ public class Emoji {
     private Post post;
 
     @Enumerated(EnumType.STRING)
+    @Column(name = "emoji_type")
     private EmojiType emojiType;
 }
