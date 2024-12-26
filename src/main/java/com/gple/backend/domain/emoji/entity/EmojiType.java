@@ -2,9 +2,9 @@ package com.gple.backend.domain.emoji.entity;
 
 public enum EmojiType {
     HEART,
-    CONGRATULATION,
+    CONGRATS,
     THUMBSUP,
     THINKING,
-    CHINA,
-    POOP
+    POOP,
+    CHINA
 }
