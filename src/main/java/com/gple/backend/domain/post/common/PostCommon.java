@@ -36,11 +36,11 @@ public class PostCommon {
         List<Emoji> emojis = post.getEmoji();
         EmojiResponse emojiDtoList = EmojiResponse.builder()
             .heartCount(getEmojiCount(emojis, EmojiType.HEART))
-            .thumbsCount(getEmojiCount(emojis, EmojiType.CONGRATS))
-            .thinkCount(getEmojiCount(emojis, EmojiType.THUMBSUP))
-            .poopCount(getEmojiCount(emojis, EmojiType.THINKING))
-            .chinaCount(getEmojiCount(emojis, EmojiType.POOP))
-            .congCount(getEmojiCount(emojis, EmojiType.CHINA))
+            .congCount(getEmojiCount(emojis, EmojiType.CONGRATS))
+            .thumbsCount(getEmojiCount(emojis, EmojiType.THUMBSUP))
+            .thinkCount(getEmojiCount(emojis, EmojiType.THINKING))
+            .poopCount(getEmojiCount(emojis, EmojiType.POOP))
+            .chinaCount(getEmojiCount(emojis, EmojiType.CHINA))
             .build();
 
         List<Boolean> checkEmoji = List.of(
