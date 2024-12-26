@@ -1,11 +1,9 @@
 package com.gple.backend.domain.emoji.service;
 
+import com.gple.backend.domain.emoji.controller.dto.request.EmojiRequest;
 import com.gple.backend.domain.emoji.entity.Emoji;
 import com.gple.backend.domain.emoji.repository.EmojiRepository;
-import com.gple.backend.global.exception.ExceptionEnum;
-import com.gple.backend.global.exception.HttpException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,10 +13,9 @@ public class DeleteEmojiService {
     private final EmojiRepository emojiRepository;
 
     @Transactional
-    public void execute(Long emojiId) {
-        Emoji emoji = emojiRepository.findById(emojiId)
-                .orElseThrow(() -> new HttpException(ExceptionEnum.NOT_FOUND_EMOJI));
-
-        emojiRepository.delete(emoji);
+    public void execute(EmojiRequest req) {
+        Emoji emoji = emojiRepository.findEmojiByEmojiTypeAndPostId(req.getEmojiType(), req.getPostId());
+        if (emoji != null)
+            emojiRepository.delete(emoji);
     }
 }
