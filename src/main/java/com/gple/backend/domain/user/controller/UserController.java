@@ -33,4 +33,9 @@ public class UserController {
     public ResponseEntity<List<GetUserResponse>> getUserList(){
         return ResponseEntity.ok(userService.getUserList());
     }
+
+    @GetMapping("/popularity")
+    public ResponseEntity<List<GetUserResponse>> queryPopularityUser() {
+        return ResponseEntity.ok(userService.popualrityUser());
+    }
 }
