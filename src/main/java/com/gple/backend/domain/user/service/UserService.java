@@ -1,6 +1,7 @@
 package com.gple.backend.domain.user.service;
 
 import com.gple.backend.domain.file.service.FileService;
+import com.gple.backend.domain.post.repository.PostRepository;
 import com.gple.backend.domain.user.controller.dto.web.request.CreateUserProfileRequest;
 import com.gple.backend.domain.user.controller.dto.web.response.GetUserResponse;
 import com.gple.backend.domain.user.entity.User;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.lang.reflect.Field;
+import java.util.Comparator;
 import java.util.List;
 
 @Service
@@ -20,6 +22,7 @@ public class UserService {
     private final UserUtil userUtil;
     private final UserRepository userRepository;
     private final S3Adapter s3Adapter;
+    private final PostRepository postRepository;
 
     @Transactional
     public void createUserProfile(CreateUserProfileRequest request){
@@ -76,5 +79,22 @@ public class UserService {
             .name(user.getName())
             .id(user.getId())
             .build();
+    }
+
+    @Transactional
+    public List<GetUserResponse> popualrityUser() {
+        List<User> user = userRepository.findAll();
+        List<User> popularUser = user.stream().sorted(Comparator.comparingInt(
+                (User u) -> postRepository.findAllByUser(u).stream()
+                        .mapToInt(p -> p.getEmoji().size())
+                        .sum()
+        ).reversed()).toList();
+
+        return popularUser.subList(0, 3).stream().map(u -> GetUserResponse.builder()
+                .id(u.getId())
+                .name(u.getName())
+                .grade(u.getGrade())
+                .profileImage(u.getProfileImage())
+                .build()).toList();
     }
 }
