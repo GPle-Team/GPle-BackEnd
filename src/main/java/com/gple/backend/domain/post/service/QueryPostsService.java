@@ -36,7 +36,7 @@ public class QueryPostsService {
         User user = userUtil.getCurrentUser();
 
         List<Post> posts = switch (postType){
-            case PostType.MY -> postRepository.findByUser(user);
+            case PostType.MY -> postRepository.findAllByUser(user);
             case PostType.REACTED -> emojiRepository.findByUser(user).stream().map(Emoji::getPost).distinct().toList();
             case null -> postRepository.findAll();
         };
