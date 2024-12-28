@@ -16,7 +16,7 @@ import com.gple.backend.domain.auth.controller.dto.common.response.TokenResponse
 import com.gple.backend.domain.auth.controller.dto.web.response.RefreshTokenResponse;
 import com.gple.backend.domain.auth.controller.dto.web.response.LoginResponse;
 import com.gple.backend.domain.auth.entity.RefreshToken;
-import com.gple.backend.domain.auth.repository.RefreshTokenRepository;
+//import com.gple.backend.domain.auth.repository.RefreshTokenRepository;
 import com.gple.backend.domain.user.entity.User;
 import com.gple.backend.domain.user.entity.Role;
 import com.gple.backend.domain.user.repository.UserRepository;
@@ -45,7 +45,7 @@ import java.util.regex.Pattern;
 @RequiredArgsConstructor
 public class AuthService {
     private final UserRepository userRepository;
-    private final RefreshTokenRepository refreshTokenRepository;
+//    private final RefreshTokenRepository refreshTokenRepository;
     private final JsonFactory jsonFactory;
     private final HttpTransport httpTransport;
     private final UserUtil userUtil;
@@ -65,9 +65,9 @@ public class AuthService {
         String slicedToken = refreshToken.substring(7);
         String id = jwtProvider.getClaims(slicedToken, TokenType.REFRESH_TOKEN).getSubject();
 
-        if(!refreshTokenRepository.existsById(id)){
-            throw new HttpException(ExceptionEnum.INVALID_REFRESH_TOKEN);
-        }
+//        if(!refreshTokenRepository.existsById(id)){
+//            throw new HttpException(ExceptionEnum.INVALID_REFRESH_TOKEN);
+//        }
 
         TokenResponse generatedToken = jwtProvider.generateToken(id, TokenType.ACCESS_TOKEN);
         return new RefreshTokenResponse(generatedToken.getToken(), generatedToken.getExpires());
@@ -144,8 +144,8 @@ public class AuthService {
             User user = userUtil.getCurrentUser();
             String id = user.getId().toString();
 
-            if(tokenId.equals(id)) refreshTokenRepository.deleteById(id);
-            else throw new HttpException(ExceptionEnum.NOT_FOUND_USER);
+//            if(tokenId.equals(id)) refreshTokenRepository.deleteById(id);
+//            else throw new HttpException(ExceptionEnum.NOT_FOUND_USER);
         }
     }
 
@@ -203,7 +203,7 @@ public class AuthService {
             .ttl(172800000L)
             .build();
 
-        refreshTokenRepository.save(refreshToken);
+//        refreshTokenRepository.save(refreshToken);
     }
 
     private GoogleTokenResponse getGoogleTokenResponse(String code){

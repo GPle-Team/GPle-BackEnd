@@ -46,8 +46,8 @@ dependencies {
     implementation 'com.google.http-client:google-http-client:1.43.3'
 
     // Redis
-    implementation 'org.springframework.data:spring-data-redis'
-    implementation 'io.lettuce:lettuce-core:6.3.2.RELEASE'
+//    implementation 'org.springframework.data:spring-data-redis'
+//    implementation 'io.lettuce:lettuce-core:6.3.2.RELEASE'
 
     // JWT
     compileOnly 'io.jsonwebtoken:jjwt-api:0.12.6'
