@@ -2,11 +2,9 @@ package com.gple.backend.domain.user.controller;
 
 import com.gple.backend.domain.user.controller.dto.web.request.CreateUserProfileRequest;
 import com.gple.backend.domain.user.controller.dto.web.response.GetUserResponse;
-import com.gple.backend.domain.user.entity.User;
 import com.gple.backend.domain.user.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -36,6 +34,6 @@ public class UserController {
 
     @GetMapping("/popularity")
     public ResponseEntity<List<GetUserResponse>> queryPopularityUser() {
-        return ResponseEntity.ok(userService.popualrityUser());
+        return ResponseEntity.ok(userService.popularityUser());
     }
 }
