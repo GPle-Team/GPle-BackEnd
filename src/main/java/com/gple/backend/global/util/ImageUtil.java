@@ -31,45 +31,31 @@ public class ImageUtil {
         };
     }
 
+    private BufferedImage makeSquare(BufferedImage image) {
+        int width = image.getWidth();
+        int height = image.getHeight();
+
+        int squareSize = Math.min(width, height);
+
+        int x = (width - squareSize) / 2;
+        int y = (height - squareSize) / 2;
+
+        return image.getSubimage(x, y, squareSize, squareSize);
+    }
+
     public MultipartFile resizeMultipartFile(MultipartFile file, String filename) throws IOException, ImageProcessingException, MetadataException {
         Metadata metadata = ImageMetadataReader.readMetadata(file.getInputStream());
+
         BufferedImage originalImage = ImageIO.read(file.getInputStream());
         originalImage = rotateExifImage(originalImage, metadata);
-
-        int originWidth = originalImage.getWidth();
-        int originHeight = originalImage.getHeight();
-
-        int newWidth, newHeight;
-        if (originWidth > originHeight) {
-            newWidth = 390;
-            newHeight = (originHeight * 390) / originWidth;
-        } else {
-            newHeight = 390;
-            newWidth = (originWidth * 390) / originHeight;
-        }
-
-        int x = (390 - newWidth) / 2;
-        int y = (390 - newHeight) / 2;
-
-        Image tmpImage = originalImage.getScaledInstance(newWidth, newHeight, Image.SCALE_SMOOTH);
-        BufferedImage resizedImage = new BufferedImage(newWidth, newHeight, BufferedImage.TYPE_INT_RGB);
-
-        Graphics2D g2d = resizedImage.createGraphics();
-        g2d.drawImage(tmpImage, 0, 0, null);
-        g2d.dispose();
-
-        BufferedImage outputImage = new BufferedImage(390, 390, BufferedImage.TYPE_INT_RGB);
-        Graphics2D g = outputImage.createGraphics();
-        g.setColor(new Color(0x263034));
-        g.fillRect(0, 0, 390, 390);
-        g.drawImage(resizedImage, x, y, null);
-        g.dispose();
+        originalImage = makeSquare(originalImage);
 
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        ImageIO.write(outputImage, "jpg", outputStream);
+        ImageIO.write(originalImage, "jpg", outputStream);
 
         return imageToMultipartFile(outputStream.toByteArray(), filename);
     }
+
 
     private int getOrientation(Metadata metadata) throws MetadataException {
         ExifIFD0Directory exif = metadata.getFirstDirectoryOfType(ExifIFD0Directory.class);
@@ -87,9 +73,9 @@ public class ImageUtil {
         BufferedImage rotatedImage = new BufferedImage(width, height, image.getType());
         Graphics2D g2d = rotatedImage.createGraphics();
 
-        g2d.setBackground(new Color(0x263034));
-        g2d.rotate(Math.toRadians(angle), (double) width / 2, (double) height / 2);
-        g2d.drawImage(image, null, 0, 0);
+        g2d.rotate(Math.toRadians(angle), width / 2.0, height / 2.0);
+
+        g2d.drawImage(image, 0, 0, null);
         g2d.dispose();
 
         return rotatedImage;
