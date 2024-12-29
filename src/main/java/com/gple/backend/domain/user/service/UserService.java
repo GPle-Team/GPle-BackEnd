@@ -1,6 +1,5 @@
 package com.gple.backend.domain.user.service;
 
-import com.gple.backend.domain.file.service.FileService;
 import com.gple.backend.domain.post.repository.PostRepository;
 import com.gple.backend.domain.user.controller.dto.web.request.CreateUserProfileRequest;
 import com.gple.backend.domain.user.controller.dto.web.response.GetUserResponse;
@@ -12,7 +11,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.lang.reflect.Field;
 import java.util.Comparator;
 import java.util.List;
 
@@ -53,21 +51,15 @@ public class UserService {
 
     @Transactional
     public List<GetUserResponse> getUserList(){
-        List<User> userList = userRepository.findAll();
+        List<User> userList = userRepository.findAllByNameIsNotNullAndGradeIsNotNull();
 
-        return userList.stream().map(user -> {
-            long grade = 0L;
-            if(user.getNumber() != null){
-                grade = user.getGrade();
-            }
-
-            return GetUserResponse.builder()
+        return userList.stream()
+            .map(user -> GetUserResponse.builder()
                 .name(user.getName())
                 .id(user.getId())
-                .grade(grade)
+                .grade(user.getGrade())
                 .profileImage(user.getProfileImage())
-                .build();
-        }).toList();
+                .build()).toList();
     }
 
     @Transactional
@@ -82,7 +74,7 @@ public class UserService {
     }
 
     @Transactional
-    public List<GetUserResponse> popualrityUser() {
+    public List<GetUserResponse> popularityUser() {
         List<User> user = userRepository.findAll();
         List<User> popularUser = user.stream().sorted(Comparator.comparingInt(
                 (User u) -> postRepository.findAllByUser(u).stream()
