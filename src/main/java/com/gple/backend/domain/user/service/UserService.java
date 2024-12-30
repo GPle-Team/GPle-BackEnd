@@ -26,22 +26,19 @@ public class UserService {
     public void createUserProfile(CreateUserProfileRequest request){
         User user = userUtil.getCurrentUser();
 
-        if(request.getName() != null &&
-            !user.getName().equals(request.getName())
-        ){
+        if(request.getName() != null){
             user.setName(request.getName());
         }
 
-        if(request.getNumber() != null
-        ){
+        if(request.getNumber() != null){
             user.setStudentNumber(
-                Long.parseLong(request.getNumber().substring(0, 1)),
-                Long.parseLong(request.getNumber().substring(1, 1)),
-                Long.parseLong(request.getNumber().substring(2, 2))
+                Long.parseLong(String.valueOf(request.getNumber().charAt(0))),
+                Long.parseLong(String.valueOf(request.getNumber().charAt(1))),
+                Long.parseLong(request.getNumber().substring(2, 4))
             );
         }
 
-        if(!request.getFile().isEmpty()){
+        if(request.getFile() != null){
             String profileImage = s3Adapter.uploadImage(request.getFile());
             user.setProfileImage(profileImage);
         }
